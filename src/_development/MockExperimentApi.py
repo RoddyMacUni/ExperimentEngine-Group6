@@ -10,7 +10,7 @@ def test():
     return 'Hello World!'
 
 
-@app.route('/experiments/<int:id>')
+@app.route('/experiments/<id>')
 def say_hello(id):
     return '''{
   "networkConditions": {
