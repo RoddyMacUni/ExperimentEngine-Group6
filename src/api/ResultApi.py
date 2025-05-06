@@ -1,4 +1,4 @@
 from src.api.BaseApi import BaseApi
 
-class InfrastructureApi(BaseApi):
+class ResultApi(BaseApi):
     pass
