@@ -1,7 +1,8 @@
-
+from flask import Flask
 
 print("Starting API")
 app = Flask(__name__)
+app.debug = True
 
 
 @app.route('/')
@@ -35,3 +36,5 @@ def say_hello(id):
   "experimentName": "My Test Experiment",
   "status": "pending"
 }'''
+
+app.run(port=5001)
