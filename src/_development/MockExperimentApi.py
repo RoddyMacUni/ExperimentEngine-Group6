@@ -10,8 +10,8 @@ def test():
     return 'Hello World!'
 
 
-@app.route('/experiments/<id>')
-def say_hello(id):
+@app.route('/experiments/<id>', methods = ['GET'])
+def getExperimentById(id):
     return '''{
   "networkConditions": {
     "delay": "50ms",
