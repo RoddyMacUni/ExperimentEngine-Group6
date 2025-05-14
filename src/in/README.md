@@ -1,1 +1,0 @@
-Default directory where encoded videos will be listened for
