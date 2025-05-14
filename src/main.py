@@ -9,24 +9,23 @@ EndTaskFlag: bool = False
 
 appSettings: AppSettings = GetAppSettings()
 
-def processExperiment(fileName: str, experimentId: str):
-    print("Processing experiment: " + experimentId)
+def processExperiment(experimentId: str):
     #Get data
-    experiment: Experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById(experimentId)
+    experiment: Experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById("TODO")
 
     #Run through network
 
     #Get metrics
 
     #Send result
-    resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint).sendResults(experimentId, ResultSet("Test"))
+    resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint).sendResults("TODO", ResultSet("Test"))
 
     print("Everything ran!")
     print("ExperimentId: " + experiment.id)
     print("ResultResponseMessage: " + resultResponse.message)
 
-#Start listening
 print("Listening for file on " + appSettings.ListenerTargetFolder)
+#Listen for new file
 counter = Counter(60, lambda minutes: print("No new file detected for " + str(minutes) + " minutes."))
 while not EndTaskFlag:
     files = sorted(os.listdir(appSettings.ListenerTargetFolder), key=lambda filename: os.path.getmtime(appSettings.ListenerTargetFolder + "/" + filename), reverse=False)
@@ -35,10 +34,7 @@ while not EndTaskFlag:
     if len(files) > 0:
         counter.reset()
         print("File detected: " + files[0])
-
-        processExperiment(files[0], files[0].partition('.')[0]) #Remove file extension
-
-        os.remove(appSettings.ListenerTargetFolder + "/" + files[0])
+        processExperiment(files[0])
     else:
         time.sleep(1)
         counter.increment()
