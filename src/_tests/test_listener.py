@@ -20,8 +20,8 @@ def test_listener_can_process():
 
     listener.start(1)
 
-    assert lastFile == "test1.txt"
-    assert lastFileName == "test1"
+    assert globals()["lastFile"] == "test1.txt"
+    assert globals()["lastFile"] == "test1"
 
 def test_listener_can_delete():
     listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
