@@ -1,9 +1,11 @@
 from typing import Callable
 
+#Class to count number of iterations of listener, mainly used to count for testing / give a "no input"...
+#notification each minute
 class Counter:
     minorIncrement: int
     majorIncrement: int
-    total: int #Never reset
+    total: int #Never resets
 
     majorIncrementThreshold: int
     onMajorIncrement: Callable[[int], None]
