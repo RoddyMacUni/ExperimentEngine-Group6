@@ -3,7 +3,7 @@ from api.ResultApi import ResultApi, GenericResponse, ResultSet
 from AppSettings import AppSettings, GetAppSettings
 import os
 import time
-from processing.TimeCounter import TimeCounter
+from processing.Counter import Counter
 
 EndTaskFlag: bool = False
 
@@ -26,7 +26,7 @@ def processExperiment(experimentId: str):
 
 print("Listening for file on " + appSettings.ListenerTargetFolder)
 #Listen for new file
-counter = TimeCounter(lambda minutes: print("No new file detected for " + str(minutes) + " minutes."))
+counter = Counter(60, lambda minutes: print("No new file detected for " + str(minutes) + " minutes."))
 while not EndTaskFlag:
     files = sorted(os.listdir(appSettings.ListenerTargetFolder), key=lambda filename: os.path.getmtime(appSettings.ListenerTargetFolder + "/" + filename), reverse=False)
     files.remove("README.md")
