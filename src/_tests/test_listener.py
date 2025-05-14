@@ -1,6 +1,9 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(srcPath)
+
 from processing.DirectoryListener import DirectoryListener
 
 
@@ -11,9 +14,9 @@ def processFiles(a: str, b: str):
     globals()["lastFileName"] = b
 
 def test_listener_can_process():
-    listener = DirectoryListener("./../in", ["README.md"], processFiles)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open("./../in/test1.txt", "+a").close()
+    open(srcPath + "/in/test1.txt", "+a").close()
 
     listener.start(1)
 
@@ -21,10 +24,10 @@ def test_listener_can_process():
     assert lastFileName == "test1"
 
 def test_listener_can_delete():
-    listener = DirectoryListener("./../in", ["README.md"], processFiles)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open("./../in/test2.txt", "+a").close()
+    open(srcPath + "/in/test2.txt", "+a").close()
 
     listener.start(1)
 
-    assert os.path.isfile("./../in/test2.txt") == False
+    assert os.path.isfile(srcPath + "/in/test2.txt") == False
