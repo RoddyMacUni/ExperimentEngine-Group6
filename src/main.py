@@ -3,7 +3,7 @@ from api.ResultApi import ResultApi, GenericResponse, ResultSet
 from AppSettings import AppSettings, GetAppSettings
 import os
 import time
-from processing.Counter import Counter
+from processing.DirectoryListener import DirectoryListener
 
 EndTaskFlag: bool = False
 
@@ -26,19 +26,5 @@ def processExperiment(fileName: str, experimentId: str):
     print("ResultResponseMessage: " + resultResponse.message)
 
 #Start listening
-print("Listening for file on " + appSettings.ListenerTargetFolder)
-counter = Counter(60, lambda minutes: print("No new file detected for " + str(minutes) + " minutes."))
-while not EndTaskFlag:
-    files = sorted(os.listdir(appSettings.ListenerTargetFolder), key=lambda filename: os.path.getmtime(appSettings.ListenerTargetFolder + "/" + filename), reverse=False)
-    files.remove("README.md")
-
-    if len(files) > 0:
-        counter.reset()
-        print("File detected: " + files[0])
-
-        processExperiment(files[0], files[0].partition('.')[0]) #Remove file extension
-
-        os.remove(appSettings.ListenerTargetFolder + "/" + files[0])
-    else:
-        time.sleep(1)
-        counter.increment()
+listener: DirectoryListener = DirectoryListener(appSettings.ListenerTargetFolder, ["README.md"], processExperiment)
+listener.start()
