@@ -5,6 +5,7 @@ import json
 class AppSettings:
     ExperimentsEndpoint: str
     ResultsEndpoint: str
+    ListenerTargetFolder: str
 
 def GetAppSettings():
     import os 
