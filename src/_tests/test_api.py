@@ -1,59 +1,32 @@
-from multiprocessing import Process
-import subprocess
 import sys
 import os
-import requests
-from time import sleep
+import requests_mock
+import json
 
 #Add src to PATH
 srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(srcPath)
-from api.ExperimentApi import ExperimentApi, Experiment
 from api.ResultApi import ResultApi, ResultSet, GenericResponse
-from AppSettings import GetAppSettings, AppSettings
+from api.ExperimentApi import ExperimentApi, Experiment
+import _development.StaticMockData as mockData
+
 
 def test_results_api():
-    resultsProcess = Process(target=subprocess.run, args=[["python", srcPath + "/_development/MockResultApi.py"]])
-    
-    resultsProcess.start()
+    resultsApi = ResultApi('http://test.com')
 
-    appSettings: AppSettings = GetAppSettings()
+    with requests_mock.Mocker() as m:
+        m.post('http://test.com/experiments/12345/results', json=json.loads(mockData.getMockResultResponse()))       
 
-    #Wait for API to start
-    while True:
-        response = requests.get(appSettings.ExperimentsEndpoint)
-        try:
-            response.raise_for_status()
-            break
-        except:
-            continue
-
-    resultsApi = ResultApi(appSettings.ResultsEndpoint)
-
-    response: GenericResponse = resultsApi.sendResults("12345", ResultSet("test"))
-    assert response.code == "200"
-    assert response.message == "OK"
-
-    resultsProcess.terminate()
+        response: GenericResponse = resultsApi.sendResults("12345", ResultSet("test"))
+        assert response.code == "200"
+        assert response.message == "OK"
 
 def test_experiments_api():
-    experimentsProcess = Process(target=subprocess.run, args=[["python", srcPath + "/_development/MockExperimentApi.py"]])
-    
-    experimentsProcess.start()
+    experimentApi = ExperimentApi('http://test.com')
 
-    appSettings: AppSettings = GetAppSettings()
-    #Wait for API to start
-    while True:
-        response = requests.get(appSettings.ExperimentsEndpoint)
-        try:
-            response.raise_for_status()
-            break
-        except:
-            continue
-    experimentsApi = ExperimentApi(appSettings.ExperimentsEndpoint)
+    with requests_mock.Mocker() as m:
+        m.get('http://test.com/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
 
-    response: Experiment = experimentsApi.getExperimentById("12345")
-    assert response.description == "An experiment testing video encodings."
-    assert response.id == "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
-
-    experimentsProcess.terminate()
+        response: Experiment = experimentApi.getExperimentById("12345")
+        assert response.id == "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+        assert response.description == "An experiment testing video encodings."
