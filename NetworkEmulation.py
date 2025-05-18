@@ -10,12 +10,12 @@ TIMEOUT = 10                            # The longest an experiment can run for 
 @dataclass
 class NetworkConditions:
     id: int             # The id of this run of the experiment (changes for each run of the experiment)
-    packetLoss: float   # The decimal fraction of the packets that should be discarded
+    packet_loss: float   # The decimal fraction of the packets that should be discarded
     delay: int          # In milliseconds
 
-    def __init__(self, id: int, delay: int, packetLoss: float):
+    def __init__(self, id: int, delay: int, packet_loss: float):
         self.delay = delay
-        self.packetLoss = packetLoss
+        self.packet_loss = packet_loss
         self.id = id
 
     """
@@ -27,16 +27,16 @@ class NetworkConditions:
     Returns:
     :return The path to the results file
     """
-    def run(self) -> Path:
+    def run(self):
         # Validate the experiment has not been run already
         if isdir(f"./{self.id}"):
             print("Experiment has already been run")
             exit(0)
-            # TODO: identify how duplicate experiment runs can occur
+            # TODO: identify how duplicate experiment runs can occur and decide whether we will support it or not
 
         # Create a new process and run the specified command, if the process takes more than the TIMEOUT value it will time out
         try:
-            completed_experiment = subprocess.run(["bash", "./test-script.sh", str(self.id), f"{self.delay}ms", f"{self.packetLoss*100}%"], timeout=TIMEOUT,
+            completed_experiment = subprocess.run(["bash", "./test-script.sh", str(self.id), f"{self.delay}ms", f"{self.packet_loss * 100}%"], timeout=TIMEOUT,
                                                   capture_output=True)
         except subprocess.TimeoutExpired:
             print("Experiment Timed out")
