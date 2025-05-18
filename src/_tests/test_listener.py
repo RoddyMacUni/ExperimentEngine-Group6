@@ -1,6 +1,7 @@
 import os
 import sys
 
+#Add src to PATH
 srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(srcPath)
 
