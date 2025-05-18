@@ -2,6 +2,7 @@ from multiprocessing import Process
 import subprocess
 import sys
 import os
+import requests
 from time import sleep
 
 #Add src to PATH
@@ -16,8 +17,17 @@ def test_results_api():
     
     resultsProcess.start()
 
-    sleep(10)
     appSettings: AppSettings = GetAppSettings()
+
+    #Wait for API to start
+    while True:
+        response = requests.get(appSettings.ExperimentsEndpoint)
+        try:
+            response.raise_for_status()
+            break
+        except:
+            continue
+
     resultsApi = ResultApi(appSettings.ResultsEndpoint)
 
     response: GenericResponse = resultsApi.sendResults("12345", ResultSet("test"))
@@ -31,8 +41,15 @@ def test_experiments_api():
     
     experimentsProcess.start()
 
-    sleep(10)
     appSettings: AppSettings = GetAppSettings()
+    #Wait for API to start
+    while True:
+        response = requests.get(appSettings.ExperimentsEndpoint)
+        try:
+            response.raise_for_status()
+            break
+        except:
+            continue
     experimentsApi = ExperimentApi(appSettings.ExperimentsEndpoint)
 
     response: Experiment = experimentsApi.getExperimentById("12345")
