@@ -1,4 +1,5 @@
 from flask import Flask
+from StaticMockData import getMockResultResponse
 
 print("Starting API")
 app = Flask(__name__)
@@ -12,9 +13,6 @@ def test():
 
 @app.route('/experiments/<experimentId>/results', methods = ['POST'])
 def createResults(experimentId):
-    return '''{
-  "code": "200",
-  "message": "OK"
-}'''
+    return getMockResultResponse()
 
 app.run(port=5002)

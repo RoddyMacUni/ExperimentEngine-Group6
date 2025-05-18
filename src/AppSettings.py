@@ -9,6 +9,6 @@ class AppSettings:
 
 def GetAppSettings():
     import os 
-    dir_path = os.path.dirname(os.path.realpath(__file__))          #TODO: Better way?
-    dictionary = json.load(open(dir_path + "\\appsettings.json"))
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dictionary = json.load(open(os.path.abspath(os.path.dirname(__file__)) + "/appsettings.json"))
     return AppSettings(**dictionary)
