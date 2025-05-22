@@ -1,3 +1,6 @@
+from model.ResultSet import ResultSet
+import json
+
 def getMockExperiment() -> str:
     return '''{
     "networkConditions": {
@@ -24,7 +27,19 @@ def getMockExperiment() -> str:
     "status": "pending"
 }'''
 
-def getMockResultResponse() -> str:
+def getMockOKResultResponse() -> str:
+    return '''{
+  "code": "200",
+  "message": "OK"
+}'''
+
+def getMockErrorResultResponse() -> str:
+    return '''{
+  "code": "500",
+  "message": "ERROR"
+}'''
+
+def getMockResultString() -> str:
     return '''{
     "Target": 109701,
     "Partner": "UWS",
@@ -39,7 +54,7 @@ def getMockResultResponse() -> str:
                 "QUA": 27,
                 "DPT": 8,
                 "GAM": 0,
-                "DURATION": "5s",
+                "DURATION": "5",
                 "VID": "Beauty"
             },
             "Network": "001003",
@@ -76,3 +91,6 @@ def getMockResultResponse() -> str:
         }
     ]
 }'''
+
+def getMockResultObject() -> ResultSet:
+    return ResultSet(json.loads(getMockResultString()))

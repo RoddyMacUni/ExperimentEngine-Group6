@@ -1,5 +1,6 @@
 from flask import Flask
-from StaticMockData import getMockResultResponse
+from StaticMockData import getMockOKResultResponse, getMockErrorResultResponse
+from model.ResultSet import ResultSet, ResultSetItem, Sequence, VideoResultMetrics
 
 print("Starting API")
 app = Flask(__name__)
@@ -13,6 +14,6 @@ def test():
 
 @app.route('/experiments/<experimentId>/results', methods = ['POST'])
 def createResults(experimentId):
-    return getMockResultResponse()
+    return getMockOKResultResponse()
 
 app.run(port=5002)
