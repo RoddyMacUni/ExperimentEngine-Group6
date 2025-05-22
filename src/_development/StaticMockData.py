@@ -42,6 +42,7 @@ def getMockErrorResultResponse() -> str:
 
 def getMockResultString() -> str:
     return '''{
+    "Error": null,
     "Target": 109701,
     "Partner": "UWS",
     "Set": [

@@ -30,6 +30,7 @@ class ResultSetItem:
 
 @dataclass
 class ResultSet:
+    Error: str | None
     Target: int
     Partner: str
     Set: List[ResultSetItem]
