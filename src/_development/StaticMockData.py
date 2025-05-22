@@ -1,3 +1,4 @@
+from dacite import from_dict
 from model.ResultSet import ResultSet
 import json
 
@@ -54,7 +55,7 @@ def getMockResultString() -> str:
                 "QUA": 27,
                 "DPT": 8,
                 "GAM": 0,
-                "DURATION": "5",
+                "DURATION": 5,
                 "VID": "Beauty"
             },
             "Network": "001003",
@@ -93,4 +94,4 @@ def getMockResultString() -> str:
 }'''
 
 def getMockResultObject() -> ResultSet:
-    return ResultSet(json.loads(getMockResultString()))
+    return from_dict(data_class=ResultSet, data=json.loads(getMockResultString()))
