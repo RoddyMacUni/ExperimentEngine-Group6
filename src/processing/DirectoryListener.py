@@ -33,7 +33,7 @@ class DirectoryListener:
                 counter.reset()
                 print("File detected: " + files[0])
 
-                self.processorFunction(files[0], files[0].partition('.')[0]) #Remove file extension
+                self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0]) #File id only, file full name
 
                 os.remove(self.targetFolder + "/" + files[0])
             else:
