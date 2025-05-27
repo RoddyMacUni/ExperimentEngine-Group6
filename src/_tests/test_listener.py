@@ -17,18 +17,18 @@ def processFiles(a: str, b: str):
 def test_listener_can_process():
     listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open(srcPath + "/in/testid1_encoded.mp4", "+a").close()
+    open(srcPath + "/in/testid1_1_encoded.mp4", "+a").close()
 
     listener.start(1)
 
     assert globals()["lastFileId"] == "testid1"
-    assert globals()["lastFileName"] == "testid1_encoded.mp4"
+    assert globals()["lastFileName"] == "testid1_1_encoded.mp4"
 
 def test_listener_can_delete():
     listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open(srcPath + "/in/testid2_encoded.mp4", "+a").close()
+    open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 
     listener.start(1)
 
-    assert os.path.isfile(srcPath + "/in/testid2_encoded.mp4") == False
+    assert os.path.isfile(srcPath + "/in/testid2_1_encoded.mp4") == False

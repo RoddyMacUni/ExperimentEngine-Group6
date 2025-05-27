@@ -44,7 +44,7 @@ class DirectoryListener:
                 counter.reset()
                 print("File detected: " + files[0])
 
-                pattern = re.compile("[A-Za-z0-9-]+_encoded.mp4") #File-Id_encoded.mp4 would be valid, for example
+                pattern = re.compile("[A-Za-z0-9-]+_[0-9+]_encoded.mp4") #File-Id_1_encoded.mp4 would be valid, for example
                 if not pattern.fullmatch(files[0]):
                     print("File name did not follow expected pattern, moving to poison queue")
                     self.moveToPoison(files[0])
@@ -52,9 +52,9 @@ class DirectoryListener:
 
                 #We definitly want this top level error handling to stop the process ending undexpectedly
                 #Inside the processing if an error is handled we want to:
-                #    1.Send the specific error to results TODO implement that here too
+                #    1.Send the specific error to results (TODO implement that here too?)
                 #    2.Throw an error so it is caught here and the poison item is removed from the main queue
-                #TODO could also be worth implementing something that will also check for files appearing 
+                #TODO would also be worth implementing something that will also check for files appearing 
                 # multiple times in a row as a fallback
                 try:
                     self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0]) #File id only, file full name
