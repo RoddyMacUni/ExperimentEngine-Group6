@@ -57,7 +57,7 @@ class DirectoryListener:
                 #TODO would also be worth implementing something that will also check for files appearing 
                 # multiple times in a row as a fallback
                 try:
-                    self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0]) #File id only, file full name
+                    self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0], files[0].partition('.')[0].partition('_')[1]) #File id only, file full name, file number
                 except:
                     print("An error occurred during processing")
                     self.moveToPoison(files[0])

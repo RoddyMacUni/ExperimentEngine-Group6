@@ -10,7 +10,7 @@ from processing.DirectoryListener import DirectoryListener
 
 global lastFile
 global lastFileName
-def processFiles(a: str, b: str):
+def processFiles(a: str, b: str, c: int):
     globals()["lastFileId"] = a
     globals()["lastFileName"] = b
 
