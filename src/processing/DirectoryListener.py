@@ -19,6 +19,7 @@ class DirectoryListener:
         self.ignoreFiles.append("poison")
 
         #Create folder for failed files
+        #TODO we may want an auto-clearing policy for this, very low priority though
         if not os.path.exists(self.targetFolder + "/poison"):
             os.makedirs(self.targetFolder + "/poison")
 
