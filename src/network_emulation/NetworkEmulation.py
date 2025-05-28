@@ -36,7 +36,7 @@ class NetworkConditions:
 
         # Create a new process and run the specified command, if the process takes more than the TIMEOUT value it will time out
         try:
-            completed_experiment = subprocess.run(["bash", "./test-script.sh", str(self.id), f"{self.delay}ms", f"{self.packet_loss * 100}%"], timeout=TIMEOUT,
+            completed_experiment = subprocess.run(["bash", "./virtual-network.sh", str(self.id), f"{self.delay}ms", f"{self.packet_loss * 100}%"], timeout=TIMEOUT,
                                                   capture_output=True)
         except subprocess.TimeoutExpired:
             print("Experiment Timed out")
