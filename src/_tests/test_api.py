@@ -15,8 +15,8 @@ import _development.StaticMockData as mockData
 def test_results_parsing():
     object: ResultSet = mockData.getMockResultObject()
     assert object.Partner == 'UWS'
-    assert object.Set[0].Sequence.DURATION == 5
-    assert object.Set[0].Results[1].Bitrate == 100
+    assert object.Set[0].EncodingParameters.Video == "Beauty"
+    assert object.Set[0].Results.Bitrate == 100
 
 def test_results_api():
     resultsApi = ResultApi('http://test.com')

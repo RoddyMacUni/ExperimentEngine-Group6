@@ -2,35 +2,47 @@ from dataclasses import dataclass
 from typing import List
 
 @dataclass 
-class Sequence:
-    ECT: str
-    COD: str
-    ECM: str
-    SPT: str
-    TMP: str
-    QUA: int
-    DPT: int
-    GAM: int
-    DURATION: int
-    VID: str
+class EncodingParameters:
+    Video: str
+    Duration: str
+    Frames_to_Encode: int
+    FPS: int
+    ResWidth: int
+    ResHeight: int
+    OutputFile: str
+    Encoder: str
+    EncoderType: str
+    Bitrate: int
+    YuvFormat: str
+    EncoderMode: str
+    Quality: int
+    Depth: int
+    Gamut: str
+    QPISlice: int
+    QPPSlice: int
+    QPBSlice: int
+    IntraPeriod: int
+    BFrames: int
 
 @dataclass
 class VideoResultMetrics:
-    Subject: str
     Bitrate: int
     PSNR: int
     SSIM: int
-    VMAP: int
+    VMAF: int
 
 @dataclass
 class ResultSetItem:
-    Sequence: Sequence
+    EncodingParameters: EncodingParameters
+    SequenceID: int
     Network: str
-    Results: List[VideoResultMetrics]
+    DistruptionProfile: int 
+    Results: VideoResultMetrics
 
 @dataclass
 class ResultSet:
     Error: str | None
-    Target: int
     Partner: str
+    TargetExperimentId: int
+    OwnerId: int
     Set: List[ResultSetItem]

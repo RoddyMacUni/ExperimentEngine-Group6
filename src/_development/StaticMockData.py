@@ -43,53 +43,42 @@ def getMockErrorResultResponse() -> str:
 def getMockResultString() -> str:
     return '''{
     "Error": null,
-    "Target": 109701,
+    "TargetExperimentId": 109701,
     "Partner": "UWS",
+    "OwnerId": 1235,
     "Set": [
         {
-            "Sequence": {
-                "ECT": "Scalable",
-                "COD": "SHVC",
-                "ECM": "RANDOM ACCESS",
-                "SPT": "1920X1080",
-                "TMP": "30fps",
-                "QUA": 27,
-                "DPT": 8,
-                "GAM": 0,
-                "DURATION": 5,
-                "VID": "Beauty"
+            "EncodingParameters": {
+                "Video": "Beauty",
+                "Duration": "5s",
+                "Frames_to_Encode": 100,
+                "FPS": 30,
+                "ResWidth": 1920,
+                "ResHeight": 1080,
+                "OutputFile": "ID_1_encoded.yuv",
+                "Encoder": "H264",
+                "EncoderType": "Standard",
+                "Bitrate": 45020,
+                "YuvFormat": "4:0:0",
+                "EncoderMode": "RANDOM ACCESS",
+                "Quality": 27,
+                "Depth": 12,
+                "Gamut": "A",
+                "QPISlice": 24,
+                "QPPSlice": 24,
+                "QPBSlice": 24,
+                "IntraPeriod": 1,
+                "BFrames": 2
             },
+            "SequenceID": 1,
             "Network": "001003",
-            "Results": [
-                {
-                    "Subject": "UWS1009",
-                    "Bitrate": 100,
-                    "PSNR": 100,
-                    "SSIM": 100,
-                    "VMAP": 100
-                },
-                {
-                    "Subject": "UWS1034",
-                    "Bitrate": 100,
-                    "PSNR": 100,
-                    "SSIM": 100,
-                    "VMAP": 100
-                },
-                {
-                    "Subject": "UWS1069",
-                    "Bitrate": 100,
-                    "PSNR": 100,
-                    "SSIM": 100,
-                    "VMAP": 100
-                },
-                {
-                    "Subject": "UWS1083",
-                    "Bitrate": 100,
-                    "PSNR": 100,
-                    "SSIM": 100,
-                    "VMAP": 100
-                }
-            ]
+            "DistruptionProfile": 1,
+            "Results": {
+                "Bitrate": 100,
+                "PSNR": 100,
+                "SSIM": 100,
+                "VMAF": 100
+            }
         }
     ]
 }'''
