@@ -6,6 +6,7 @@ srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(srcPath)
 
 from processing.DirectoryListener import DirectoryListener
+from exceptions.KnownProcessingException import KnownProcessingException
 
 
 global lastFile
@@ -14,8 +15,11 @@ def processFiles(a: str, b: str, c: int):
     globals()["lastFileId"] = a
     globals()["lastFileName"] = b
 
+def knownErrorCallback(error: KnownProcessingException):
+    pass
+
 def test_listener_can_process():
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback)
 
     open(srcPath + "/in/testid1_1_encoded.mp4", "+a").close()
 
@@ -25,7 +29,7 @@ def test_listener_can_process():
     assert globals()["lastFileName"] == "testid1_1_encoded.mp4"
 
 def test_listener_can_delete():
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback)
 
     open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 

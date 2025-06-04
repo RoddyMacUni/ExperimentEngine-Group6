@@ -14,10 +14,11 @@ class DirectoryListener:
 
     stopFlag: bool = False
 
-    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None]):
+    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None], errorHandlerFunction: Callable[[KnownProcessingException], None]):
         self.targetFolder = targetFolder
         self.ignoreFiles = ignoreFiles
         self.processorFunction = processorFunction
+        self.errorHandlerFunction = errorHandlerFunction
 
         self.ignoreFiles.append("poison")
 
