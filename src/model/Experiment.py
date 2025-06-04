@@ -1,24 +1,42 @@
 from dataclasses import dataclass
 
-@dataclass
-class NetworkConditions:
-    delay: str
-    packetLoss: str
+@dataclass 
+class EncodingParameters:
+    Video: str
+    Duration: str
+    Frames_to_Encode: int
+    FPS: int
+    ResWidth: int
+    ResHeight: int
+    OutputFile: str
+    Encoder: str
+    EncoderType: str
+    Bitrate: int
+    YuvFormat: str
+    EncoderMode: str
+    Quality: int
+    Depth: int
+    Gamut: str
+    QPISlice: int
+    QPPSlice: int
+    QPBSlice: int
+    IntraPeriod: int
+    BFrames: int
+
 
 @dataclass
-class EncodingParameters:
-    codec: str
-    bitrate: str
-    resolution: str
+class ExperimentSetItem:
+    SequenceId: int
+    NetworkTopologyId: str
+    networkDisruptionProfileId: int
+    EncodingParameters: EncodingParameters
 
 @dataclass
 class Experiment:
-    networkConditions: NetworkConditions
-    createdAt: str
-    metricsRequested: list[str]
-    encodingParameters: EncodingParameters
-    description: str
-    videoSources: list[str]
     id: str
+    OwnerId: int
     experimentName: str
+    createdAt: str
+    description: str
     status: str
+    Set: list[ExperimentSetItem]
