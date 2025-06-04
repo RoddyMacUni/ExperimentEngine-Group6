@@ -10,14 +10,21 @@ from api.ResultApi import ResultApi, ResultSet, GenericResponse
 from api.ExperimentApi import ExperimentApi, Experiment
 import _development.StaticMockData as mockData
 
+#This mocker does not support request bodies
+#So this is to cover testing the result body can be parsed
+def test_results_parsing():
+    object: ResultSet = mockData.getMockResultObject()
+    assert object.Partner == 'UWS'
+    assert object.Set[0].EncodingParameters.Video == "Beauty"
+    assert object.Set[0].Results.Bitrate == 100
 
 def test_results_api():
     resultsApi = ResultApi('http://test.com')
 
     with requests_mock.Mocker() as m:
-        m.post('http://test.com/experiments/12345/results', json=json.loads(mockData.getMockResultResponse()))       
+        m.post('http://test.com/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
 
-        response: GenericResponse = resultsApi.sendResults("12345", ResultSet("test"))
+        response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
         assert response.code == "200"
         assert response.message == "OK"
 
