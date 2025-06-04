@@ -31,7 +31,7 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
 
 # Injected function to send errors to results
 def handleKnownProcessingException(exception: KnownProcessingException):
-    ResultApi(appSettings.ResultsEndpoint).sendError(exception.experimentId, exception.message)
+    ResultApi(appSettings.ResultsEndpoint).sendError(exception.experimentId, exception.message, exception.ownerId, exception.partner)
 
 #Start listening
 listener: DirectoryListener = DirectoryListener(appSettings.ListenerTargetFolder, ["README.md"], processExperiment, handleKnownProcessingException)

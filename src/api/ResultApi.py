@@ -11,7 +11,7 @@ class ResultApi(BaseApi):
         response.raise_for_status()
         return GenericResponse(**response.json())
     
-    def sendError(self, experimentId: str, errorMessage: str, ownerId: int = -1, partner: str = "", ) -> GenericResponse:
+    def sendError(self, experimentId: str, errorMessage: str, ownerId: int = -1, partner: str = "") -> GenericResponse:
         failedResultsJson = ResultSet(errorMessage, partner, experimentId, ownerId, [])
         response = requests.post(url=(self.baseUrl + "/experiments/" + experimentId + "/results"), json=asdict(failedResultsJson))
         response.raise_for_status()
