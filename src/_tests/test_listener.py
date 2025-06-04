@@ -10,25 +10,25 @@ from processing.DirectoryListener import DirectoryListener
 
 global lastFile
 global lastFileName
-def processFiles(a: str, b: str):
-    globals()["lastFile"] = a
+def processFiles(a: str, b: str, c: int):
+    globals()["lastFileId"] = a
     globals()["lastFileName"] = b
 
 def test_listener_can_process():
     listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open(srcPath + "/in/test1.txt", "+a").close()
+    open(srcPath + "/in/testid1_1_encoded.mp4", "+a").close()
 
     listener.start(1)
 
-    assert globals()["lastFile"] == "test1.txt"
-    assert globals()["lastFileName"] == "test1"
+    assert globals()["lastFileId"] == "testid1"
+    assert globals()["lastFileName"] == "testid1_1_encoded.mp4"
 
 def test_listener_can_delete():
     listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles)
 
-    open(srcPath + "/in/test2.txt", "+a").close()
+    open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 
     listener.start(1)
 
-    assert os.path.isfile(srcPath + "/in/test2.txt") == False
+    assert os.path.isfile(srcPath + "/in/testid2_1_encoded.mp4") == False

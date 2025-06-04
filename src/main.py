@@ -9,7 +9,7 @@ EndTaskFlag: bool = False
 
 appSettings: AppSettings = GetAppSettings()
 
-def processExperiment(fileName: str, experimentId: str):
+def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
     #Get data
     experiment: Experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById(experimentId)
