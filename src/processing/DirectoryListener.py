@@ -1,3 +1,5 @@
+from AppSettings import AppSettings, GetAppSettings
+from exceptions.KnownProcessingException import KnownProcessingException
 from processing.Counter import Counter
 import os
 import time
@@ -8,13 +10,15 @@ class DirectoryListener:
     targetFolder: str
     ignoreFiles: list[str]
     processorFunction: Callable[[str, str], None] #takes the file name and name without any file extensions
+    errorHandlerFunction: Callable[[KnownProcessingException], None] #takes and handles a known processing exception
 
     stopFlag: bool = False
 
-    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None]):
+    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None], errorHandlerFunction: Callable[[KnownProcessingException], None]):
         self.targetFolder = targetFolder
         self.ignoreFiles = ignoreFiles
         self.processorFunction = processorFunction
+        self.errorHandlerFunction = errorHandlerFunction
 
         self.ignoreFiles.append("poison")
 
@@ -59,8 +63,12 @@ class DirectoryListener:
                 # multiple times in a row as a fallback
                 try:
                     self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0], files[0].partition('.')[0].partition('_')[1]) #File id only, file full name, file number
+                except KnownProcessingException as e:
+                    print("An error has occurred during processing: " + e.message)
+                    self.moveToPoison(files[0])
+                    self.errorHandlerFunction(e)
                 except:
-                    print("An error occurred during processing")
+                    print("An unknown error occurred during processing")
                     self.moveToPoison(files[0])
                 else: 
                     os.remove(self.targetFolder + "/" + files[0])
