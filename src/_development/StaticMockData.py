@@ -4,28 +4,41 @@ import json
 
 def getMockExperiment() -> str:
     return '''{
-    "networkConditions": {
-        "delay": "50ms",
-        "packetLoss": "2%"
-    },
-    "createdAt": "2024-04-01T10:00:00Z",
-    "metricsRequested": [
-        "PSNR",
-        "PSNR"
-    ],
-    "encodingParameters": {
-        "codec": "h264",
-        "bitrate": "5000kbps",
-        "resolution": "1920x1080"
-    },
-    "description": "An experiment testing video encodings.",
-    "videoSources": [
-        "video1.mp4",
-        "video1.mp4"
-    ],
     "id": "046b6c7f-0b8a-43b9-b35d-6489e6daee91",
+    "OwnerId": 1235,
+    "createdAt": "2024-04-01T10:00:00Z",
+    "description": "An experiment testing video encodings.",
     "experimentName": "My Test Experiment",
-    "status": "pending"
+    "status": "pending",
+    "Set": [
+    {
+        "SequenceId": 1,
+        "NetworkTopologyId": "001",
+        "networkDisruptionProfileId": 100,
+        "EncodingParameters": {
+            "Video": "Beauty",
+            "Duration": "5s",
+            "Frames_to_Encode": 100,
+            "FPS": 30,
+            "ResWidth": 1920,
+            "ResHeight": 1080,
+            "OutputFile": "ID_1_encoded.yuv",
+            "Encoder": "H264",
+            "EncoderType": "Standard",
+            "Bitrate": 45020,
+            "YuvFormat": "4:0:0",
+            "EncoderMode": "RANDOM ACCESS",
+            "Quality": 27,
+            "Depth": 12,
+            "Gamut": "A",
+            "QPISlice": 24,
+            "QPPSlice": 24,
+            "QPBSlice": 24,
+            "IntraPeriod": 1,
+            "BFrames": 2
+        }
+    }
+    ]
 }'''
 
 def getMockOKResultResponse() -> str:

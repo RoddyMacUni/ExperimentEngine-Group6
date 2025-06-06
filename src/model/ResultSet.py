@@ -1,28 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-
-@dataclass 
-class EncodingParameters:
-    Video: str
-    Duration: str
-    Frames_to_Encode: int
-    FPS: int
-    ResWidth: int
-    ResHeight: int
-    OutputFile: str
-    Encoder: str
-    EncoderType: str
-    Bitrate: int
-    YuvFormat: str
-    EncoderMode: str
-    Quality: int
-    Depth: int
-    Gamut: str
-    QPISlice: int
-    QPPSlice: int
-    QPBSlice: int
-    IntraPeriod: int
-    BFrames: int
+from model.Experiment import EncodingParameters
 
 @dataclass
 class VideoResultMetrics:
