@@ -1,6 +1,10 @@
-# Not needed right now, we dont need encoder or video data (i don't think) and no endpoint for getting network type provided
+from api.BaseApi import BaseApi
+from model.Network import Network
+from dacite import from_dict
+import requests
 
-#from src.api.BaseApi import BaseApi
-
-#class InfrastructureApi(BaseApi):
-#    pass
+class InfrastructureApi(BaseApi):
+    def getNetworkProfileById(self, id: str) -> Network:
+        response = requests.get(self.baseUrl + "/Network/" + id)
+        response.raise_for_status()
+        return from_dict(data_class=Network, data=response.json())

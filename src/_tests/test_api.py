@@ -8,6 +8,7 @@ srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(srcPath)
 from api.ResultApi import ResultApi, ResultSet, GenericResponse
 from api.ExperimentApi import ExperimentApi, Experiment
+from api.InfrastructureApi import InfrastructureApi, Network
 import _development.StaticMockData as mockData
 
 #This mocker does not support request bodies
@@ -38,3 +39,22 @@ def test_experiments_api():
         assert response.id == "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
         assert response.description == "An experiment testing video encodings."
         assert response.Set[0].EncodingParameters.Video == "Beauty"
+
+
+def test_infrastructure_api():
+    infraApi = InfrastructureApi('http://test.com')
+
+    with requests_mock.Mocker() as m:
+        m.get(
+            'http://test.com/Network/1',
+            json=json.loads(mockData.getMockNetwork())
+        )
+
+        response: Network = infraApi.getNetworkProfileById("1")
+
+        assert response.name == "Profile Network Name"
+        assert response.id == 1
+        assert response.packetLoss == 5
+        assert response.delay == 20
+        assert response.jitter == 3
+        assert response.bandwidth == 100
