@@ -6,6 +6,8 @@ class AppSettings:
     ExperimentsEndpoint: str
     ResultsEndpoint: str
     ListenerTargetFolder: str
+    VideoRevieverTargetFolder: str
+    EncodedVideoFileNamePattern: str
 
 def GetAppSettings():
     import os 
