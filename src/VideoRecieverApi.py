@@ -19,7 +19,7 @@ def getExperimentById():
     if 'experimentId' not in request.form or 'sequenceNumber' not in request.form:
         return "Experiment ID (string) and sequence number (integer) must be provided in the form data", 400
     
-    #TODO: Validate mp4?
+    #TODO: Validate mp4?, authenticate?
     file = request.files['file']
     filename = request.form['experimentId'] + "_" + request.form['sequenceNumber'] + "_encoded.mp4"
 
