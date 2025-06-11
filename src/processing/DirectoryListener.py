@@ -1,6 +1,7 @@
 from AppSettings import AppSettings, GetAppSettings
 from exceptions.KnownProcessingException import KnownProcessingException
 from processing.Counter import Counter
+from processing.FileNameValidator import FileNameValidator
 import os
 import time
 from typing import Callable
@@ -49,8 +50,7 @@ class DirectoryListener:
                 counter.reset()
                 print("File detected: " + files[0])
 
-                pattern = re.compile("[A-Za-z0-9-]+_[0-9+]_encoded.mp4") #File-Id_1_encoded.mp4 would be valid, for example
-                if not pattern.fullmatch(files[0]):
+                if not FileNameValidator().ValidateEncodedVideoName(files[0]):
                     print("File name did not follow expected pattern, moving to poison queue")
                     self.moveToPoison(files[0])
                     continue

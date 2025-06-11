@@ -1,5 +1,6 @@
 from flask import Flask, request
 from AppSettings import AppSettings, GetAppSettings
+from processing.FileNameValidator import FileNameValidator
 import os
 
 print("Starting API")
@@ -22,6 +23,9 @@ def getExperimentById():
     #TODO: Validate mp4?, authenticate?
     file = request.files['file']
     filename = request.form['experimentId'] + "_" + request.form['sequenceNumber'] + "_encoded.mp4"
+
+    if not FileNameValidator().ValidateEncodedVideoName(filename):
+        return "Generated name does not follow the expected pattern", 400
 
     filePath = os.path.join(GetAppSettings().ListenerTargetFolder, filename)
     file.save(filePath)
