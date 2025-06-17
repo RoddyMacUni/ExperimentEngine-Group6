@@ -7,7 +7,7 @@ import time
 from processing.DirectoryListener import DirectoryListener
 from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
 from model.Experiment import ExperimentSetItem
-from processing.ResultCompiler import CompileResultsFile
+from processing.ResultCompiler import ResultCompiler
 
 EndTaskFlag: bool = False
 
@@ -40,7 +40,7 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
     
     #Compile full result file or save next step of partial results file 
-    finalResultsFile: ResultSet | None = CompileResultsFile(partialResultsFile) #TODO: if this errors, it should delete corrosponding saved files
+    finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
 
     #If partial results file is not complete, start next loop
     if finalResultsFile is None:
