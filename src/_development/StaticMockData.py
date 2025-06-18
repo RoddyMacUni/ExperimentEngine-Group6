@@ -131,3 +131,14 @@ def getMockResultString() -> str:
 
 def getMockResultObject() -> ResultSet:
     return from_dict(data_class=ResultSet, data=json.loads(getMockResultString()))
+
+
+def getMockNetwork() -> str:
+    return '''{
+        "name": "Profile Network Name",
+        "id": 1,
+        "packetLoss": 5,
+        "delay": 20,
+        "jitter": 3,
+        "bandwidth": 100
+    }'''

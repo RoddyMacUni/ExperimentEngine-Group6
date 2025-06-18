@@ -1,1 +1,18 @@
-# Not needed right now, we dont need encoder or video data (i don't think) and no endpoint for getting network type provided
+from flask import Flask
+from StaticMockData import getMockExperiment
+
+print("Starting API")
+app = Flask(__name__)
+app.debug = True
+
+
+@app.route('/')
+def test():
+    return 'Hello World!'
+
+
+@app.route('/Network/<id>', methods = ['GET'])
+def getNetworkProfileById(id):
+    return getNetworkProfileById()
+
+app.run(port=5001)
