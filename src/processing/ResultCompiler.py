@@ -22,6 +22,7 @@ class ResultCompiler:
     #Attempts to compile full result from partial one
     #Requires partialResults to contain all top-level data
     #Returns none if could not compile full result
+    #TODO: Validate experiment ID's match, sequence numbers match
     def CompileResultsFile(self, partialResults: ResultSet, experiment: Experiment) -> ResultSet | None:
         #Check if existing results file exists for experiment, if one exists load and append data
         currentResults: ResultSet
@@ -31,13 +32,15 @@ class ResultCompiler:
             currentResults: ResultSet = from_dict(data_class=ResultSet, data=json.loads(file.read()))
             file.close()
 
-            currentResults.Set.extend(partialResults.Set)
+            currentResults.Set.append(partialResults.Set)
         #Otherwise, use partial file
         else:
             currentResults = partialResults
 
         #Check if results has all sequence items
         if len(currentResults.Set) == len(experiment.Set):
+            if os.path.exists(self.getFileName(experiment)):
+                os.remove(self.getFileName(experiment))
             return currentResults
         
         #If not then save it and return None
