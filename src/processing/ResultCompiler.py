@@ -1,16 +1,19 @@
 from model.ResultSet import ResultSet, ResultSetItem
 from model.Experiment import Experiment
 from AppSettings import AppSettings, GetAppSettings
+from dataclasses import asdict
 
 import os
 import json
 from dacite import from_dict
 
 class ResultCompiler:
+    srcFolder: str
     partialResultsTargetFolder: str
 
     def __init__(self):
-        self.partialResultsTargetFolder = GetAppSettings().PartialResulsTargetFolder
+        self.srcFolder = os.path.abspath(os.path.dirname(__file__)) + "/../"
+        self.partialResultsTargetFolder = self.srcFolder + GetAppSettings().PartialResulsTargetFolder
 
     def getFileName(self, experiment: Experiment) -> str:
         #Returns the file name for the partial results file
@@ -33,12 +36,13 @@ class ResultCompiler:
         else:
             currentResults = partialResults
 
-        #Check if results has all sequence items, if not then save it and return None
+        #Check if results has all sequence items
         if len(currentResults.Set) == len(experiment.Set):
-            file = open(self.getFileName(experiment), 'w')
-            file.write(json.dumps(currentResults.to_dict(), indent=4))
-            file.close()
-            return None
-
-        #Otherwise, return the full result file
-        return currentResults
+            return currentResults
+        
+        #If not then save it and return None
+        file = open(self.getFileName(experiment), 'w')
+        file.write(json.dumps(asdict(currentResults), indent=4))
+        file.close()
+        return None
+        
