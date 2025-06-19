@@ -6,6 +6,7 @@
 # $2 - The required delay in ms
 # $3 - The required packet loss in percentage points
 # $4 - The input video name
+# Any params after this last param is to be used to pass the metric collection configuration to the driver script
 
 # Create the directory for the experiment output
 mkdir $1 && cd $_
