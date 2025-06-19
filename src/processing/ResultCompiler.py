@@ -2,7 +2,7 @@ from model.ResultSet import ResultSet, ResultSetItem
 from model.Experiment import Experiment
 from AppSettings import AppSettings, GetAppSettings
 from dataclasses import asdict
-
+from exceptions.KnownProcessingException import KnownProcessingException
 import os
 import json
 from dacite import from_dict
@@ -22,8 +22,10 @@ class ResultCompiler:
     #Attempts to compile full result from partial one
     #Requires partialResults to contain all top-level data
     #Returns none if could not compile full result
-    #TODO: Validate experiment ID's match, sequence numbers match
     def CompileResultsFile(self, partialResults: ResultSet, experiment: Experiment) -> ResultSet | None:
+        #If these do not match, it is a logical error in the program
+        if not (partialResults.TargetExperimentId == experiment.id): raise Exception("Experiment Id's do not match")
+        
         #Check if existing results file exists for experiment, if one exists load and append data
         currentResults: ResultSet
         if os.path.exists(self.getFileName(experiment)):
