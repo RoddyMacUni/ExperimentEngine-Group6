@@ -1,12 +1,18 @@
 import unittest
 from video_metrics.Metric import VMAFEvaluator
+import sys
 
 REF_PATH = "../../test_videos/sample_source.mp4"
 DIS_PATH = "../../test_videos/sample_source.mp4"
 
+@unittest.skipUnless(
+    sys.platform.startswith("win"),
+    "Custom FFmpeg build currently only runs on windows"
+)
 class MyTestCase(unittest.TestCase):
 
     def test_sameVideo(self):
+
         test_harness = VMAFEvaluator(reference_path=REF_PATH, distorted_path=REF_PATH)
 
         vmaf, ssim, psnr = test_harness.evaluate()
