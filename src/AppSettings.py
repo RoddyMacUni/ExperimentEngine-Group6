@@ -8,6 +8,7 @@ class AppSettings:
     ListenerTargetFolder: str
     VideoRevieverTargetFolder: str
     EncodedVideoFileNamePattern: str
+    PartialResulsTargetFolder: str
 
 def GetAppSettings():
     import os 

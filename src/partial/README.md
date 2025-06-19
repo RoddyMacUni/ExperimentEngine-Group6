@@ -1,0 +1,1 @@
+Default directory where partial results files are saved
