@@ -1,6 +1,5 @@
 import subprocess
 from subprocess import CompletedProcess, CalledProcessError
-from os.path import isdir
 from dataclasses import dataclass
 
 from api.InfrastructureApi import InfrastructureApi
@@ -8,7 +7,6 @@ from model import Network
 from model.Experiment import ExperimentSetItem, Experiment
 
 from exceptions.KnownProcessingException import KnownProcessingException
-from video_processing.VMAF import VMAFEvaluator
 
 APP_DATA_PATH = "../experiment_data/"
 
@@ -16,10 +14,13 @@ APP_DATA_PATH = "../experiment_data/"
 class NetworkEmulator:
     parent_experiment: Experiment   # Exists only to get the parent experiment's id to raise an exception if something goes wrong
     network_conditions: Network     # The disruption profile required for this experiment item
+    sequence_number: int
+    input_path: str
+    output_path: str
     network_type: str               # The network topology to test on - TODO: Only one network topology supported at this time
     command_timeout = 10            # The longest an experiment can run for before being terminated (measured in seconds)
 
-    def __init__(self, experiment_item: ExperimentSetItem, parent_experiment: Experiment):
+    def __init__(self, experiment_item: ExperimentSetItem, parent_experiment: Experiment, input_path: str, output_path: str) -> None:
         self.network_conditions = InfrastructureApi.getNetworkProfileById(experiment_item.networkDisruptionProfileId)
 
         # TODO: Get network topology details from the Infra API when supported
@@ -28,25 +29,32 @@ class NetworkEmulator:
         # FIXME: Sort out metric collection
         # self.evaluator = VMAFEvaluator()
 
+        self.parent_experiment = parent_experiment
+        self.sequence_number = experiment_item.SequenceId
+
+        self.input_path = input_path
+        self.output_path = output_path
+
         self.command = self.build_experiment_command()
 
     """
     Builds the command needed to actually run the experiment on the required network
     """
     def build_experiment_command(self) -> str:
-        # Get the command required to gather metrics
-        # TODO: Actually get the command required to gather the metrics
-        metric_command = "unimpl"
-
         # TODO: Clarify network types supported
         match self.network_type:
             case "001":
-                driver_command = f"./virtual-network.sh {self.network_conditions.delay}ms {self.network_conditions.packetLoss}%"
+                driver_command = (f"./virtual-network.sh " +
+                                  f"{self.sequence_number} " +
+                                  f"{self.network_conditions.delay}ms " +
+                                  f"{self.network_conditions.packetLoss}%"+
+                                  f"{self.input_path} %"+
+                                  f"{self.output_path} %")
             case _:
                 # Throw exception if anything but a virtual network is required
                 raise KnownProcessingException(f"network type {self.network_type} is not supported", self.parent_experiment.id)
 
-        return f"{driver_command} {metric_command}"
+        return driver_command
 
     """
     Actually runs the command to execute the experiment and handles any failures that may occur
