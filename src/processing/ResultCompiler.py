@@ -24,8 +24,8 @@ class ResultCompiler:
     #Returns none if could not compile full result
     def CompileResultsFile(self, partialResults: ResultSet, experiment: Experiment) -> ResultSet | None:
         #If these do not match, it is a logical error in the program
-        if not (partialResults.TargetExperimentId == experiment.id): raise Exception("Experiment Id's do not match")
-        
+        if not (partialResults.TargetExperimentId == int(experiment.id)): raise Exception("Experiment Id's do not match")
+
         #Check if existing results file exists for experiment, if one exists load and append data
         currentResults: ResultSet
         if os.path.exists(self.getFileName(experiment)):
