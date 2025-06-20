@@ -33,11 +33,11 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     #Get metrics
     videoResults: VideoResultMetrics = VideoResultMetrics(100, 100, 100, 100) #TODO: implement
 
-    corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
-    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
+    corrospondingExperiment: ExperimentSetItem = experiment.Set[int(videoNumber)]
+    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
 
     #Build partial result file
-    partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
+    partialResultsFile: ResultSet = ResultSet(None, "", int(experiment.id), experiment.OwnerId, [ videoResultSetItem ])
     
     #Compile full result file or save next step of partial results file 
     finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
