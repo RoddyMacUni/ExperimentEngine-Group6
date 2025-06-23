@@ -3,7 +3,7 @@ from video_metrics.Metric import VMAFEvaluator
 import sys
 
 REF_PATH = "../../test_videos/sample_source.mp4"
-DIS_PATH = "../../test_videos/sample_source.mp4"
+DIS_PATH = "../../test_videos/sample_degraded.mp4"
 
 @unittest.skipUnless(
     sys.platform.startswith("win"),
@@ -26,9 +26,9 @@ class MyTestCase(unittest.TestCase):
 
         vmaf, ssim, psnr = test_harness.evaluate()
 
-        self.assertGreater(float(vmaf), 95.0) #96 is a high VMAF score -> identical videos
-        self.assertEqual(float(ssim), 1.0)
-        self.assertEqual(psnr, "inf")
+        self.assertGreater(float(vmaf), 90.0) #96 is a high VMAF score -> identical videos
+        self.assertEqual(float(ssim), 0.983802)
+        self.assertEqual(float(psnr), 42.773112)
 
 
 if __name__ == '__main__':
