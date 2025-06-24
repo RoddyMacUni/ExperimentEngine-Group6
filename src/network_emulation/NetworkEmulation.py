@@ -2,46 +2,53 @@ import subprocess
 from subprocess import CompletedProcess, CalledProcessError
 from os.path import isdir
 from dataclasses import dataclass
-from pathlib import Path
+
+from api.InfrastructureApi import InfrastructureApi
+from model import Network
+from model.Experiment import ExperimentSetItem, Experiment
+
+from exceptions.KnownProcessingException import KnownProcessingException
 
 APP_DATA_PATH = "../experiment_data/"
-TIMEOUT = 10                            # The longest an experiment can run for before being terminated (measured in seconds)
 
 @dataclass
-class NetworkConditions:
-    id: int             # The id of this run of the experiment (changes for each run of the experiment)
-    packet_loss: float   # The decimal fraction of the packets that should be discarded
-    delay: int          # In milliseconds
+class NetworkEmulator:
+    parent_experiment: Experiment   # Exists only to get the parent experiment's id to raise an exception if something goes wrong
+    network_conditions: Network     # The disruption profile required for this experiment item
+    network_type: str               # The network topology to test on - TODO: Only one network topology supported at this time
+    command_timeout = 10            # The longest an experiment can run for before being terminated (measured in seconds)
 
-    def __init__(self, id: int, delay: int, packet_loss: float):
-        self.delay = delay
-        self.packet_loss = packet_loss
-        self.id = id
+    def __init__(self, experiment_item: ExperimentSetItem, parent_experiment: Experiment):
+        self.network_conditions = InfrastructureApi.getNetworkProfileById(experiment_item.networkDisruptionProfileId)
+
+        # TODO: Get network topology details from the Infra API when supported
+        self.network_type = experiment_item.NetworkTopologyId
+        self.command = self.build_experiment_command()
 
     """
-    Runs a set experiment
-    
-    Parameters:
-    None
-    
-    Returns:
-    :return The path to the results file
+    Builds the command needed to actually run the experiment on the required network
+    """
+    def build_experiment_command(self) -> str:
+        # TODO: Clarify network types supported
+        match self.network_type:
+            case "001":
+                driver_command = f"./virtual-network.sh {self.network_conditions.delay}ms {self.network_conditions.packetLoss}%"
+            case _:
+                # Throw exception if anything but a virtual network is required
+                raise KnownProcessingException(f"network type {self.network_type} is not supported", self.parent_experiment.id)
+
+        return f"{driver_command}"
+
+    """
+    Actually runs the command to execute the experiment and handles any failures that may occur
     """
     def run(self):
-        # Validate the experiment has not been run already
-        if isdir(f"./{self.id}"):
-            print("Experiment has already been run")
-            exit(0)
-            # TODO: identify how duplicate experiment runs can occur and decide whether we will support it or not
 
-        # Create a new process and run the specified command, if the process takes more than the TIMEOUT value it will time out
+        # Create a new process and run the driver command, if the process takes more than the TIMEOUT value it will time out
         try:
-            completed_experiment = subprocess.run(["bash", "./virtual-network.sh", str(self.id), f"{self.delay}ms", f"{self.packet_loss * 100}%"], timeout=TIMEOUT,
-                                                  capture_output=True)
+            completed_experiment = subprocess.run(["bash", self.command], timeout=self.command_timeout, capture_output=True)
         except subprocess.TimeoutExpired:
-            print("Experiment Timed out")
-            exit(0)
-            # TODO: Implement timout and define how the results should be presented to the ResultsDB
+            raise KnownProcessingException("Video streaming took too long", self.parent_experiment.id)
 
         # Validate the experiment has actually passed and handle any failures that may occur
         try:
@@ -49,13 +56,4 @@ class NetworkConditions:
             if completed_experiment.stderr != b'':
                 raise ValueError
         except (ValueError, CalledProcessError) as e:
-            print("Experiment failed")
-            handleFailedExperiment(completed_experiment)
-
-# TODO: Implement error handling and define how the results should be presented to the ResultsDB
-def handleFailedExperiment(completed_experiment: CompletedProcess):
-    print(f"Experiment failed: {completed_experiment}")
-
-
-if __name__ == "__main__":
-    NetworkConditions(1, 1, 0.2).run()
+             raise KnownProcessingException(f"Experiment failed: {completed_experiment} with error: {completed_experiment.stderr}", self.parent_experiment.id)

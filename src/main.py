@@ -2,6 +2,7 @@ from exceptions.KnownProcessingException import KnownProcessingException
 from api.ExperimentApi import ExperimentApi, Experiment
 from api.ResultApi import ResultApi, GenericResponse, ResultSet
 from AppSettings import AppSettings, GetAppSettings
+from network_emulation.NetworkEmulation import NetworkEmulator
 import os
 import time
 from processing.DirectoryListener import DirectoryListener
@@ -24,7 +25,10 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
-    #Run through network
+    # Run each of the videos in the experiment through the network
+    for experimentItem in experiment.Set:
+        net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment)
+        net_emulator.run()
 
     #Get metrics
 
