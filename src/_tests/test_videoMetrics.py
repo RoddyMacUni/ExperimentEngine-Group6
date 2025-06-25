@@ -6,10 +6,10 @@ REF_PATH = "../../test_videos/sample_source.mp4"
 DIS_PATH = "../../test_videos/sample_degraded.mp4"
 DIF_PATH = "../../test_videos/sample_different.mp4"
 
-# @unittest.skipUnless(
-#     sys.platform.startswith("win"),
-#     "Custom FFmpeg build currently only runs on windows"
-# )
+@unittest.skipUnless(
+    sys.platform.startswith("win"),
+    "Custom FFmpeg build currently only runs on windows"
+)
 class MyTestCase(unittest.TestCase):
 
     def test_sameVideo(self):
