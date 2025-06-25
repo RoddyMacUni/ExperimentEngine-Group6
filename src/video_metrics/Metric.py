@@ -20,7 +20,7 @@ class VMAFEvaluator:
             proc = subprocess.run(shlex.split(cmd), capture_output=True, text=True, check=True)
 
             vmaf_regex = re.search(r'VMAF score:\s*([0-9]+(?:\.[0-9]+)?)', proc.stderr).group(1)
-            ssim_regex = re.search(r'(?mi)^.*SSIM.*?All:\s*([^\r\n]*)', proc.stderr).group(1)
+            ssim_regex = re.search(r'(?mi)^.*SSIM.*?All:\s*([0-9.]+)', proc.stderr).group(1)
             psnr_regex = re.search(r'(?mi)^.*PSNR.*?\saverage:\s*(inf|\d+(?:\.\d+)?)', proc.stderr).group(1)
 
             if vmaf_regex and ssim_regex and psnr_regex:
