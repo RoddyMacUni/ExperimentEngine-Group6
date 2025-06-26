@@ -18,7 +18,7 @@ modprobe sch_netem
 lsmod | grep sch_netem
 
 # Generate sdp file for this experiment
-ffmpeg -sdp_file #######
+ffmpeg -sdp_file /tmp/experiment.sdp
 
 # Apply the requested disruption to the loopback adapter
 tc qdisc add dev lo root netem delay $2 loss $3
@@ -31,6 +31,9 @@ ffmpeg -protocol_whitelist file,rtp,udp -i /tmp/experiment.sdp -strict 2 $5
 
 # Stop the stream transmitting once the video has been received
 kill %1
+
+# Remove sdp file associated with the stream
+rm /tmp/experiment.sdp
 
 # Remove disruption from the adapter
 tc qdisc del dev lo root

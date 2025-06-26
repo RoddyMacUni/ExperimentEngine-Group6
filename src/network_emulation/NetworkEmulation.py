@@ -14,15 +14,16 @@ APP_DATA_PATH = "../experiment_data/"
 @dataclass
 class NetworkEmulator:
     parent_experiment: Experiment   # Exists only to get the parent experiment's id to raise an exception if something goes wrong
+    experiment_item: ExperimentSetItem
     network_conditions: Network     # The disruption profile required for this experiment item
     network_type: str               # The network topology to test on - TODO: Only one network topology supported at this time
     command_timeout = 10            # The longest an experiment can run for before being terminated (measured in seconds)
 
-    def __init__(self, experiment_item: ExperimentSetItem, parent_experiment: Experiment):
-        self.network_conditions = InfrastructureApi.getNetworkProfileById(experiment_item.networkDisruptionProfileId)
-
+    def __init__(self, experiment_item: ExperimentSetItem, parent_experiment: Experiment, network_conditions: Network) -> None:
+        self.network_conditions = network_conditions
+        self.experiment_item = experiment_item
         # TODO: Get network topology details from the Infra API when supported
-        self.network_type = experiment_item.NetworkTopologyId
+        self.network_type = self.experiment_item.NetworkTopologyId
         self.command = self.build_experiment_command()
 
     """
@@ -32,7 +33,13 @@ class NetworkEmulator:
         # TODO: Clarify network types supported
         match self.network_type:
             case "001":
-                driver_command = f"./virtual-network.sh {self.network_conditions.delay}ms {self.network_conditions.packetLoss}%"
+                # TODO Rework command generation
+                driver_command = (f"./virtual-network.sh "
+                                  f"{self.experiment_item.SequenceId} "
+                                  f"{self.network_conditions.delay} "
+                                  f"{self.network_conditions.packetLoss} "
+                                  f"/tmp/{self.experiment_item.SequenceId}.mp4 "
+                                  f"/tmp/{self.experiment_item.SequenceId}-distorted.mp4 ")
             case _:
                 # Throw exception if anything but a virtual network is required
                 raise KnownProcessingException(f"network type {self.network_type} is not supported", self.parent_experiment.id)

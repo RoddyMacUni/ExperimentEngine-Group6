@@ -1,10 +1,10 @@
+from api.InfrastructureApi import InfrastructureApi
 from exceptions.KnownProcessingException import KnownProcessingException
 from api.ExperimentApi import ExperimentApi, Experiment
 from api.ResultApi import ResultApi, GenericResponse, ResultSet
 from AppSettings import AppSettings, GetAppSettings
 from network_emulation.NetworkEmulation import NetworkEmulator
-import os
-import time
+from model.Network import Network
 from processing.DirectoryListener import DirectoryListener
 
 EndTaskFlag: bool = False
@@ -27,6 +27,8 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
 
     # Run each of the videos in the experiment through the network
     for experimentItem in experiment.Set:
+
+        net: Network = InfrastructureApi.getNetworkProfileById(experimentItem.networkDisruptionProfileId)
         net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment)
         net_emulator.run()
 
