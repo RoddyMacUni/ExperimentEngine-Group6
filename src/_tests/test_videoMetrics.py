@@ -1,5 +1,5 @@
 import unittest
-from video_metrics.Metric import VMAFEvaluator
+from video_metrics.Metric import MetricEvaluator
 import sys
 
 REF_PATH = "../../test_videos/sample_source.mp4"
@@ -14,31 +14,27 @@ class MyTestCase(unittest.TestCase):
 
     def test_sameVideo(self):
 
-        test_harness = VMAFEvaluator(reference_path=REF_PATH, distorted_path=REF_PATH)
+        vmaf, ssim, psnr = MetricEvaluator.evaluate(reference_path=REF_PATH, distorted_path=REF_PATH)
 
-        vmaf, ssim, psnr = test_harness.evaluate()
-
-        self.assertGreater(float(vmaf), 95.0) #96 is a high VMAF score -> identical videos
-        self.assertEqual(float(ssim), 1.0)
-        self.assertEqual(psnr, "inf")
+        self.assertGreater(vmaf, 95.0) #96 is a high VMAF score -> identical videos
+        self.assertEqual(ssim, 1.0)
+        self.assertEqual(psnr, 9999.0)
 
     def test_DegradedVideo(self):
-        test_harness = VMAFEvaluator(reference_path=REF_PATH, distorted_path=DIS_PATH)
 
-        vmaf, ssim, psnr = test_harness.evaluate()
+        vmaf, ssim, psnr = MetricEvaluator.evaluate(reference_path=REF_PATH, distorted_path=DIS_PATH)
 
-        self.assertGreater(float(vmaf), 90.0) #96 is a high VMAF score -> identical videos
-        self.assertEqual(float(ssim), 0.983802)
-        self.assertEqual(float(psnr), 42.773112)
+        self.assertGreater(vmaf, 90.0) #96 is a high VMAF score -> identical videos
+        self.assertEqual(ssim, 0.983802)
+        self.assertEqual(psnr, 42.773112)
 
     def test_DifferentVideo(self):
-        test_harness = VMAFEvaluator(reference_path=REF_PATH, distorted_path=DIF_PATH)
 
-        vmaf, ssim, psnr = test_harness.evaluate()
+        vmaf, ssim, psnr = MetricEvaluator.evaluate(reference_path=REF_PATH, distorted_path=DIF_PATH)
 
-        self.assertEqual(float(vmaf), 0.0) # Should be 0 completely different videos
-        self.assertLess(float(ssim), 0.5) # should be low value
-        self.assertLess(float(psnr), 20) # Fairly low value
+        self.assertEqual(vmaf, 0.0) # Should be 0 completely different videos
+        self.assertLess(ssim, 0.5) # should be low value
+        self.assertLess(psnr, 20) # Fairly low value
 
 
 if __name__ == '__main__':
