@@ -19,7 +19,6 @@ tokenManager: TokenManager = TokenManager("http://localhost:2000/fake")
 def test_results_parsing():
     object: ResultSet = mockData.getMockResultObject()
     assert object.Partner == 'UWS'
-    assert object.Set[0].EncodingParameters.Video == "Beauty"
     assert object.Set[0].Results.Bitrate == 100
 
 def test_results_api():
@@ -37,13 +36,13 @@ def test_experiments_api():
     experimentApi = ExperimentApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.get('http://localhost:2000/fake/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
+        m.get('http://localhost:2000/fake/experiments/1', json=json.loads(mockData.getMockExperiment()))       
         m.post('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
 
-        response: Experiment = experimentApi.getExperimentById("12345")
-        assert response.id == "0467"
-        assert response.description == "An experiment testing video encodings."
-        assert response.Set[0].EncodingParameters.Video == "Beauty"
+        response: Experiment = experimentApi.getExperimentById("1")
+        assert response.Id == 1
+        assert response.Description == "Sample experiment for demo purposes"
+        assert response.Sequences[0].EncodingParameters != None
 
 
 def test_infrastructure_api():

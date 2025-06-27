@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List
-from model.Experiment import EncodingParameters
 
 @dataclass
 class VideoResultMetrics:
@@ -11,7 +10,7 @@ class VideoResultMetrics:
 
 @dataclass
 class ResultSetItem:
-    EncodingParameters: EncodingParameters
+    EncodingParameters: dict
     SequenceID: int
     Network: str
     DistruptionProfile: int 

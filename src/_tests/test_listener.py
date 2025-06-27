@@ -25,7 +25,7 @@ def knownErrorCallback(error: KnownProcessingException):
     globals()["knownErrorDetected"] = True
 
 def test_listener_can_process():
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback, 0)
 
     open(srcPath + "/in/testid1_1_encoded.mp4", "+a").close()
 
@@ -35,7 +35,7 @@ def test_listener_can_process():
     assert globals()["lastFileName"] == "testid1_1_encoded.mp4"
 
 def test_listener_can_delete():
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFiles, knownErrorCallback, 0)
 
     open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 
@@ -46,7 +46,7 @@ def test_listener_can_delete():
 def test_listener_can_handle_known_error():
     globals()["knownErrorDetected"] = False
 
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFilesWithKnownError, knownErrorCallback)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFilesWithKnownError, knownErrorCallback, 0)
     open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 
     listener.start(1)
@@ -59,7 +59,7 @@ def test_listener_can_handle_known_error():
 def test_listener_can_handle_unknown_error():
     globals()["knownErrorDetected"] = False
 
-    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFilesWithUnexpectedError, knownErrorCallback)
+    listener = DirectoryListener(srcPath + "/in", ["README.md"], processFilesWithUnexpectedError, knownErrorCallback, 0)
     open(srcPath + "/in/testid2_1_encoded.mp4", "+a").close()
 
     listener.start(1)

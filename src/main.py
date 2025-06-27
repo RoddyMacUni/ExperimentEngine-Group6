@@ -6,7 +6,7 @@ import os
 import time
 from processing.DirectoryListener import DirectoryListener
 from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
-from model.Experiment import ExperimentSetItem
+from model.Experiment import SequenceItem
 from processing.ResultCompiler import ResultCompiler
 from api.TokenManager import TokenManager
 
@@ -36,11 +36,11 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     #Get metrics
     videoResults: VideoResultMetrics = VideoResultMetrics(100, 100, 100, 100) #TODO: implement
 
-    corrospondingExperiment: ExperimentSetItem = experiment.Set[int(videoNumber)]
+    corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
 
     #Build partial result file
-    partialResultsFile: ResultSet = ResultSet(None, "", int(experiment.id), experiment.OwnerId, [ videoResultSetItem ])
+    partialResultsFile: ResultSet = ResultSet(None, "", int(experiment.Id), experiment.OwnerId, [ videoResultSetItem ])
     
     #Compile full result file or save next step of partial results file 
     finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
