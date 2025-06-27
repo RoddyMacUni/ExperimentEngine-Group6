@@ -1,4 +1,3 @@
-from AppSettings import AppSettings, GetAppSettings
 from api.BaseApi import BaseApi
 from dataclasses import dataclass
 from dacite import from_dict
@@ -10,17 +9,22 @@ class tokenResponse:
     token: str
 
 class TokenManager(BaseApi):
-    appSettings: AppSettings
-    token: str
+    token: str | None
+
+    def __init__(self, baseUrl):
+        super().__init__(baseUrl)
+        self.token = None
 
     def fetchNewToken(self):
         response = requests.get(self.baseUrl + "/auth/login")
         response.raise_for_status()
-        return from_dict(data_class=tokenResponse, data=json.loads(response.text))
+        responseObject: tokenResponse = from_dict(data_class=tokenResponse, data=json.loads(response.json()))
+        return responseObject.token
 
     def getToken(self):
         if(self.token is None):
-            return self.fetchNewToken()
+            self.token = self.fetchNewToken()
         return self.token
-        
     
+    def getTokenAsAuthHeader(self):
+        return {'Authorization': 'Bearer ' + self.getToken()}
