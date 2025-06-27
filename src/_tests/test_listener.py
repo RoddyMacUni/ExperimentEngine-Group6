@@ -19,7 +19,7 @@ def processFilesWithUnexpectedError(a: str, b: str, c: int):
     raise Exception("Unknown error")
 
 def processFilesWithKnownError(a: str, b: str, c: int):
-    raise KnownProcessingException("id", "Known error", 0, "partner")
+    raise KnownProcessingException("id", "Known error", 0)
 
 def knownErrorCallback(error: KnownProcessingException):
     globals()["knownErrorDetected"] = True

@@ -1,6 +1,7 @@
 import sys
 import os
 import requests_mock
+from requests_mock import Mocker
 import json
 
 #Add src to PATH
@@ -26,7 +27,7 @@ def test_results_api():
 
     with requests_mock.Mocker() as m:
         m.post('http://localhost:2000/fake/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
-        m.post('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
         assert response.code == "200"
@@ -37,7 +38,7 @@ def test_experiments_api():
 
     with requests_mock.Mocker() as m:
         m.get('http://localhost:2000/fake/experiments/1', json=json.loads(mockData.getMockExperiment()))       
-        m.post('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: Experiment = experimentApi.getExperimentById("1")
         assert response.Id == 1
@@ -53,7 +54,7 @@ def test_infrastructure_api():
             'http://localhost:2000/fake/Network/1',
             json=json.loads(mockData.getMockNetwork())
         )
-        m.post('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: Network = infraApi.getNetworkProfileById("1")
 

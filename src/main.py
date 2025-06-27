@@ -37,10 +37,10 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     videoResults: VideoResultMetrics = VideoResultMetrics(100, 100, 100, 100) #TODO: implement
 
     corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
-    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
+    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
 
     #Build partial result file
-    partialResultsFile: ResultSet = ResultSet(None, "", int(experiment.Id), experiment.OwnerId, [ videoResultSetItem ])
+    partialResultsFile: ResultSet = ResultSet(None, experiment.Id, experiment.OwnerId, [videoResultSetItem])
     
     #Compile full result file or save next step of partial results file 
     finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
@@ -53,11 +53,11 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     try:
         resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint, tokenManager).sendResults(experimentId, finalResultsFile)
     except Exception as e:
-        raise KnownProcessingException(experimentId, "Failed to send results", experiment.ownerId, experiment.partner)
+        raise KnownProcessingException(experimentId, "Failed to send results", experiment.OwnerId)
 
 # Injected function to send errors to results
 def handleKnownProcessingException(exception: KnownProcessingException):
-    ResultApi(appSettings.ResultsEndpoint, tokenManager).sendError(exception.experimentId, exception.message, exception.ownerId, exception.partner)
+    ResultApi(appSettings.ResultsEndpoint, tokenManager).sendError(exception.experimentId, exception.message, exception.ownerId)
 
 if __name__ == "__main__":
     #Start listening

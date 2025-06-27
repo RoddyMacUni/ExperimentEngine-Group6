@@ -13,7 +13,7 @@ class ResultApi(BaseAuthenticatedApi):
         return GenericResponse(**response.json())
     
     def sendError(self, experimentId: str, errorMessage: str, ownerId: int = -1, partner: str = "") -> GenericResponse:
-        failedResultsJson = ResultSet(errorMessage, partner, experimentId, ownerId, [])
+        failedResultsJson = ResultSet(errorMessage, experimentId, ownerId, [])
         response = requests.post(url=(self.baseUrl + "/experiments/" + experimentId + "/results"), json=asdict(failedResultsJson), headers=self.tokenManager.getTokenAsAuthHeader())
         response.raise_for_status()
         return GenericResponse(**response.json())
