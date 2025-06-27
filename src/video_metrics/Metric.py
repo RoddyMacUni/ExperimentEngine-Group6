@@ -3,16 +3,12 @@ import subprocess
 import shlex
 
 
-class VMAFEvaluator:
-    def __init__(self, reference_path: str, distorted_path: str):
-        self.reference_path = reference_path
-        self.distorted_path = distorted_path
+class MetricEvaluator:
 
-
-    def evaluate(self) -> tuple[str, str, str]:
+    def evaluate(reference_path: str, distorted_path: str) -> tuple[float,  float, float]:
         cmd = "ffmpeg -i " + \
-              self.distorted_path + \
-              " -i " + self.reference_path + \
+              distorted_path + \
+              " -i " + reference_path + \
               ' -lavfi "[0:v][1:v]libvmaf,[0:v][1:v]psnr,[0:v][1:v]ssim"' + \
               " -f null -"
 
@@ -35,4 +31,7 @@ class VMAFEvaluator:
         if "inf" in ssim:
             ssim = "1.0"
 
-        return vmaf, ssim, psnr
+        if psnr == "inf":
+            psnr = "9999.0"
+
+        return float(vmaf), float(ssim), float(psnr)

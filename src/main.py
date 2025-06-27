@@ -8,6 +8,7 @@ from processing.DirectoryListener import DirectoryListener
 from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
 from model.Experiment import ExperimentSetItem
 from processing.ResultCompiler import ResultCompiler
+from video_metrics.Metric import MetricEvaluator
 
 EndTaskFlag: bool = False
 
@@ -29,9 +30,11 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
     #Run through network
+    bitrate = 100.0 # Bitrate metric is gathered at streaming stage
 
     #Get metrics
-    videoResults: VideoResultMetrics = VideoResultMetrics(100, 100, 100, 100) #TODO: implement
+    videoMetricValues = MetricEvaluator.evaluate(fileName, "../../test_videos/sample_degraded.mp4") #TODO: Change second param to saved degraded video file, just keep it as sample for now
+    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
 
     corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
