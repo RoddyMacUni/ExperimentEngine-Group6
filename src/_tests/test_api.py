@@ -18,8 +18,8 @@ tokenManager: TokenManager = TokenManager("http://localhost:2000/fake")
 #So this is to cover testing the result body can be parsed
 def test_results_parsing():
     object: ResultSet = mockData.getMockResultObject()
-    assert object.Partner == 'UWS'
-    assert object.Set[0].Results.Bitrate == 100
+    assert object.OwnerId == 1
+    assert object.Sequences[0].SequenceID == 1
 
 def test_results_api():
     resultsApi = ResultApi('http://localhost:2000/fake', tokenManager)
