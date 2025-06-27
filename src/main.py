@@ -19,7 +19,7 @@ appSettings: AppSettings = GetAppSettings()
 #DirectoryListener will handle printing and sending to poision queue, you only need to throw the KnownProcessingException
 #Any known exception messages should be short and to the point, as they will be sent to results
 #TODO: We may want to add a way to send more detailed information to a log file, low priority
-def processExperiment(fileName: str, experimentId: str, videoNumber: int):
+def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
     #Get data
     experiment: Experiment
