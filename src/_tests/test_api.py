@@ -36,7 +36,7 @@ def test_experiments_api():
         m.get('http://test.com/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
 
         response: Experiment = experimentApi.getExperimentById("12345")
-        assert response.id == "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+        assert response.id == "0467"
         assert response.description == "An experiment testing video encodings."
         assert response.Set[0].EncodingParameters.Video == "Beauty"
 

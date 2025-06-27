@@ -44,7 +44,8 @@ class DirectoryListener:
 
             #Ignore specified files
             for i in range(len(self.ignoreFiles)):
-                files.remove(self.ignoreFiles[i])
+                if self.ignoreFiles[i] in files:
+                    files.remove(self.ignoreFiles[i])
 
             if len(files) > 0:
                 counter.reset()
@@ -62,13 +63,17 @@ class DirectoryListener:
                 #TODO would also be worth implementing something that will also check for files appearing 
                 # multiple times in a row as a fallback
                 try:
-                    self.processorFunction(files[0].partition('.')[0].partition('_')[0], files[0], files[0].partition('.')[0].partition('_')[1]) #File id only, file full name, file number
+                    fileId = files[0].partition('.')[0].partition('_')[0]
+                    fileName = files[0]
+                    sequenceNumber = files[0].partition('.')[0].partition('_')[2].partition('_')[0]
+                    self.processorFunction(fileId, fileName, sequenceNumber)
                 except KnownProcessingException as e:
                     print("An error has occurred during processing: " + e.message)
                     self.moveToPoison(files[0])
                     self.errorHandlerFunction(e)
-                except:
-                    print("An unknown error occurred during processing")
+                except Exception as e:
+                    print("An unknown error occurred during processing: ")
+                    print(e)
                     self.moveToPoison(files[0])
                 else: 
                     os.remove(self.targetFolder + "/" + files[0])

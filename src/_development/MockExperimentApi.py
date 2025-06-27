@@ -1,3 +1,9 @@
+#Add src to PATH
+import sys
+import os
+srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(srcPath)
+
 from flask import Flask
 from StaticMockData import getMockExperiment
 
