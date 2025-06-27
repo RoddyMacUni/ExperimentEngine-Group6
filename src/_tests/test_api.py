@@ -12,7 +12,7 @@ from api.InfrastructureApi import InfrastructureApi, Network
 from api.TokenManager import TokenManager
 import _development.StaticMockData as mockData
 
-tokenManager: TokenManager = TokenManager("http://test.com")
+tokenManager: TokenManager = TokenManager("http://localhost:2000/fake")
 
 #This mocker does not support request bodies
 #So this is to cover testing the result body can be parsed
@@ -23,22 +23,22 @@ def test_results_parsing():
     assert object.Set[0].Results.Bitrate == 100
 
 def test_results_api():
-    resultsApi = ResultApi('http://test.com', tokenManager)
+    resultsApi = ResultApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.post('http://test.com/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
-        m.get('http://test.com/auth/login', json='{"token": "abc"}')
+        m.post('http://localhost:2000/fake/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
+        m.get('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
 
         response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
         assert response.code == "200"
         assert response.message == "OK"
 
 def test_experiments_api():
-    experimentApi = ExperimentApi('http://test.com', tokenManager)
+    experimentApi = ExperimentApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.get('http://test.com/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
-        m.get('http://test.com/auth/login', json='{"token": "abc"}')
+        m.get('http://localhost:2000/fake/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
+        m.get('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
 
         response: Experiment = experimentApi.getExperimentById("12345")
         assert response.id == "0467"
@@ -47,14 +47,14 @@ def test_experiments_api():
 
 
 def test_infrastructure_api():
-    infraApi = InfrastructureApi('http://test.com', tokenManager)
+    infraApi = InfrastructureApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
         m.get(
-            'http://test.com/Network/1',
+            'http://localhost:2000/fake/Network/1',
             json=json.loads(mockData.getMockNetwork())
         )
-        m.get('http://test.com/auth/login', json='{"token": "abc"}')
+        m.get('http://localhost:2000/fake/auth/login', json='{"token": "abc"}')
 
         response: Network = infraApi.getNetworkProfileById("1")
 
