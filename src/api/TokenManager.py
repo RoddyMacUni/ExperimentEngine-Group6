@@ -16,7 +16,7 @@ class TokenManager(BaseApi):
         self.token = None
 
     def fetchNewToken(self):
-        response = requests.get(self.baseUrl + "/auth/login")
+        response = requests.post(self.baseUrl + "/auth/login")
         response.raise_for_status()
         responseObject: tokenResponse = from_dict(data_class=tokenResponse, data=json.loads(response.json()))
         return responseObject.token

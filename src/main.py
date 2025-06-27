@@ -8,10 +8,12 @@ from processing.DirectoryListener import DirectoryListener
 from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
 from model.Experiment import ExperimentSetItem
 from processing.ResultCompiler import ResultCompiler
+from api.TokenManager import TokenManager
 
 EndTaskFlag: bool = False
 
 appSettings: AppSettings = GetAppSettings()
+tokenManager: TokenManager = TokenManager(appSettings.AuthEndpoint)
 
 #IMPORTANT
 #Any exception in here that can pass ANY information to results should be a KnownProcessingException
@@ -21,10 +23,11 @@ appSettings: AppSettings = GetAppSettings()
 #TODO: We may want to add a way to send more detailed information to a log file, low priority
 def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
+
     #Get data
     experiment: Experiment
     try:
-        experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById(experimentId)
+        experiment = ExperimentApi(appSettings.ExperimentsEndpoint, tokenManager).getExperimentById(experimentId)
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
@@ -48,13 +51,13 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     
     #Otherwise, send results
     try:
-        resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint).sendResults(experimentId, finalResultsFile)
+        resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint, tokenManager).sendResults(experimentId, finalResultsFile)
     except Exception as e:
         raise KnownProcessingException(experimentId, "Failed to send results", experiment.ownerId, experiment.partner)
 
 # Injected function to send errors to results
 def handleKnownProcessingException(exception: KnownProcessingException):
-    ResultApi(appSettings.ResultsEndpoint).sendError(exception.experimentId, exception.message, exception.ownerId, exception.partner)
+    ResultApi(appSettings.ResultsEndpoint, tokenManager).sendError(exception.experimentId, exception.message, exception.ownerId, exception.partner)
 
 if __name__ == "__main__":
     #Start listening
