@@ -3,10 +3,10 @@ from typing import List
 
 @dataclass
 class VideoResultMetrics:
-    Bitrate: int
-    PSNR: int
-    SSIM: int
-    VMAF: int
+    Bitrate: float
+    PSNR: float
+    SSIM: float
+    VMAF: float
 
 @dataclass
 class ResultSetItem():
