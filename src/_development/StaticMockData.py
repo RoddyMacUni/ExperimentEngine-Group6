@@ -25,7 +25,6 @@ def getMockExperiment() -> str:
 
 def getMockOKResultResponse() -> str:
     return '''{
-  "code": "200",
   "message": "OK"
 }'''
 

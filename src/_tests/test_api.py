@@ -30,7 +30,6 @@ def test_results_api():
         m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
-        assert response.code == "200"
         assert response.message == "OK"
 
 def test_experiments_api():
