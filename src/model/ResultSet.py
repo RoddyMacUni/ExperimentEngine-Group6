@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List
-from model.Experiment import EncodingParameters
 
 @dataclass
 class VideoResultMetrics:
@@ -10,17 +9,16 @@ class VideoResultMetrics:
     VMAF: float
 
 @dataclass
-class ResultSetItem:
-    EncodingParameters: EncodingParameters
+class ResultSetItem():
     SequenceID: int
-    Network: str
-    DistruptionProfile: int 
+    NetworkTopologyId: int | None #TODO remove this, this is a bug on the backend!
+    DistruptionProfileId: int
+    EncodingParameters: dict
     Results: VideoResultMetrics
 
 @dataclass
 class ResultSet:
     Error: str | None
-    Partner: str
     TargetExperimentId: int
     OwnerId: int
-    Set: List[ResultSetItem]
+    Sequences: List[ResultSetItem]
