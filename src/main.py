@@ -1,11 +1,14 @@
 from api.InfrastructureApi import InfrastructureApi
 from exceptions.KnownProcessingException import KnownProcessingException
 from api.ExperimentApi import ExperimentApi, Experiment
-from api.ResultApi import ResultApi, GenericResponse, ResultSet
+from api.ResultApi import ResultApi, GenericResponse
 from AppSettings import AppSettings, GetAppSettings
 from network_emulation.NetworkEmulation import NetworkEmulator
 from model.Network import Network
 from processing.DirectoryListener import DirectoryListener
+from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
+from model.Experiment import ExperimentSetItem
+from processing.ResultCompiler import ResultCompiler
 
 EndTaskFlag: bool = False
 
@@ -20,8 +23,9 @@ appSettings: AppSettings = GetAppSettings()
 def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
     #Get data
+    experiment: Experiment
     try:
-        experiment: Experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById(experimentId)
+        experiment = ExperimentApi(appSettings.ExperimentsEndpoint).getExperimentById(experimentId)
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
@@ -33,21 +37,32 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
         net_emulator.run()
 
     #Get metrics
+    videoResults: VideoResultMetrics = VideoResultMetrics(100, 100, 100, 100) #TODO: implement
 
-    #Send result
+    corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
+    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
+
+    #Build partial result file
+    partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
+    
+    #Compile full result file or save next step of partial results file 
+    finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
+
+    #If partial results file is not complete, start next loop
+    if finalResultsFile is None:
+        return  
+    
+    #Otherwise, send results
     try:
-        resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint).sendResults(experimentId, ResultSet("Test"))
+        resultResponse: GenericResponse = ResultApi(appSettings.ResultsEndpoint).sendResults(experimentId, finalResultsFile)
     except Exception as e:
         raise KnownProcessingException(experimentId, "Failed to send results", experiment.ownerId, experiment.partner)
-
-    print("Everything ran!")
-    print("ExperimentId: " + experiment.id)
-    print("ResultResponseMessage: " + resultResponse.message)
 
 # Injected function to send errors to results
 def handleKnownProcessingException(exception: KnownProcessingException):
     ResultApi(appSettings.ResultsEndpoint).sendError(exception.experimentId, exception.message, exception.ownerId, exception.partner)
 
-#Start listening
-listener: DirectoryListener = DirectoryListener(appSettings.ListenerTargetFolder, ["README.md"], processExperiment, handleKnownProcessingException)
-listener.start()
+if __name__ == "__main__":
+    #Start listening
+    listener: DirectoryListener = DirectoryListener(appSettings.ListenerTargetFolder, ["README.md"], processExperiment, handleKnownProcessingException)
+    listener.start()
