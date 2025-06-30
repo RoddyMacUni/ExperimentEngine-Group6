@@ -2,9 +2,17 @@ import unittest
 from video_metrics.Metric import MetricEvaluator
 import sys
 
+from vmaf.python import vmaf
+
 REF_PATH = "../../test_videos/sample_source.mp4"
 DIS_PATH = "../../test_videos/sample_degraded.mp4"
 DIF_PATH = "../../test_videos/sample_different.mp4"
+
+
+def file_to_string(param):
+    with open(param, "r") as f:
+        file_content = f.read()
+        return file_content
 
 @unittest.skipUnless(
     sys.platform.startswith("win"),
@@ -35,6 +43,12 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(vmaf, 0.0) # Should be 0 completely different videos
         self.assertLess(ssim, 0.5) # should be low value
         self.assertLess(psnr, 20) # Fairly low value
+
+    def test_bitrate(self):
+
+        example_command_line_output = file_to_string("../../test_videos/sample_bitrate_output_1.txt")
+
+        self.assertEqual(MetricEvaluator.evaluateBitRate(example_command_line_output), 517.7)
 
 
 if __name__ == '__main__':
