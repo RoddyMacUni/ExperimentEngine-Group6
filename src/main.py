@@ -1,5 +1,6 @@
 from exceptions.KnownProcessingException import KnownProcessingException
 from api.ExperimentApi import ExperimentApi, Experiment
+from api.InfrastructureApi import InfrastructureApi
 from api.ResultApi import ResultApi, GenericResponse
 from AppSettings import AppSettings, GetAppSettings
 from network_emulation.NetworkEmulation import NetworkEmulator
@@ -32,28 +33,29 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     # Run each of the videos in the experiment through the network
     for experimentItem in experiment.Set:
 
-        net: Network = InfrastructureApi.getNetworkProfileById(experimentItem.networkDisruptionProfileId)
-        net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment)
-        net_emulator.run()
-    # Run through network
-    bitrate = MetricEvaluator.evaluateBitRate("[out#0/mp4 @ 0x63bf77a99380] video:266KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.627007%\nframe=  296 fps= 10 q=-1.0 Lsize=     270KiB time=00:00:09.80 bitrate= 225.8kbits/s dup=0 drop=4 speed=0.334x\n[libx264 @ 0x63bf77a5fc80] frame I:2     Avg QP:21.26  size: 14844") # Bitrate metric is gathered at streaming stage
+        net: Network = InfrastructureApi.getNetworkProfileById(str(experimentItem.networkDisruptionProfileId))
+        net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment, net, fileName)
+        disrupted_file, streaming_log = net_emulator.run()
 
-    # Get metrics
-    videoMetricValues = MetricEvaluator.evaluate(fileName, "../../test_videos/sample_degraded.mp4") #TODO: Change second param to saved degraded video file, just keep it as sample for now
-    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+        # Run through network
+        bitrate = MetricEvaluator.evaluateBitRate(streaming_log) # Bitrate metric is gathered at streaming stage
 
-    corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
-    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
+        # Get metrics
+        videoMetricValues = MetricEvaluator.evaluate(fileName, disrupted_file) #TODO: Change second param to saved degraded video file, just keep it as sample for now
+        videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
 
-    #Build partial result file
-    partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
-    
-    #Compile full result file or save next step of partial results file 
-    finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
+        corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
+        videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
 
-    #If partial results file is not complete, start next loop
-    if finalResultsFile is None:
-        return  
+        #Build partial result file
+        partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
+
+        #Compile full result file or save next step of partial results file
+        finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
+
+        #If partial results file is not complete, start next loop
+        if finalResultsFile is None:
+            return
     
     #Otherwise, send results
     try:
