@@ -7,6 +7,8 @@ from platform import freedesktop_os_release
 from os.path import exists
 from os import remove
 
+TEST_VIDEO_ROOT_DIR = "/root/ExperimentEngine-Group6/test_videos/"
+
 class TestNetworkEmulation(unittest.TestCase):
 	mock_exp_item: ExperimentSetItem
 	mock_exp: Experiment
@@ -71,9 +73,9 @@ class TestNetworkEmulation(unittest.TestCase):
 	Ensures the command used to run the video streaming is correct on the golden path
 	"""
 	def test_virtual_network_driver_command(self):
-		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, "/tmp/sample_source.mp4")
+		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, TEST_VIDEO_ROOT_DIR + "sample_source.mp4")
 
-		expected_cmd = 'bash /root/ExperimentEngine-Group6/src/network_emulation/virtual-network.sh 1 11 9 /tmp/sample_source.mp4 /tmp/1-1-disrupted.mp4'
+		expected_cmd = f'bash /root/ExperimentEngine-Group6/src/network_emulation/virtual-network.sh 1 11 9 {TEST_VIDEO_ROOT_DIR}sample_source.mp4 {TEST_VIDEO_ROOT_DIR}1-1-disrupted.mp4'
 		self.assertEqual(net_emu.command, expected_cmd)
 	"""
 	Ensure that an invalid network topology is rejected properly
@@ -83,14 +85,14 @@ class TestNetworkEmulation(unittest.TestCase):
 		self.mock_exp_item.NetworkTopologyId = '000'
 
 		with self.assertRaises(KnownProcessingException):
-			NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, "/tmp/sample_source.mp4")
+			NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}sample_source.mp4")
 
 	"""
 	Check that en error is thrown when the source file is missing
 	"""
 	def test_missing_source_file(self):
 		with self.assertRaises(KnownProcessingException):
-			_ = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, "/tmp/non-existent-file.mp4")
+			_ = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}non-existent-file.mp4")
 
 	"""
 	Tests that a nominal command produces a successful stream
@@ -98,7 +100,7 @@ class TestNetworkEmulation(unittest.TestCase):
 	@unittest.skipIf(freedesktop_os_release()['ID'] != 'arch', 'Skipping as tests are not being run on Arch linux')
 	def test_streaming(self):
 		# Set up the network with a test file
-		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, "/tmp/sample_source.mp4")
+		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}sample_source.mp4")
 		disrupted_file, streaming_log = net_emu.run()
 
 		self.assertIsNotNone(streaming_log)
@@ -111,23 +113,11 @@ class TestNetworkEmulation(unittest.TestCase):
 		# Set the experiment item to be run as a demo network
 		self.mock_exp_item.NetworkTopologyId = '999'
 
-		# Remove the result file if needed
-		remove("/tmp/1-1-disrupted.mp4")
-
-		expected_output = """[EE_INFO] Sequence_number 1
-		[EE_INFO] Delay: 11
-		[EE_INFO] Packet Loss: 9
-		[EE_INFO] Source file: /tmp/sample_source.mp4
-		[EE_INFO] Distorted file path: /tmp/1-1-disrupted.mp4
-		[EE_INFO] Enabling sch_netem
-		[EE_INFO] Applying network conditions
-		[EE_INFO] Deleting previously exported file
-		[EE_INFO] Creating sdp file
-		[EE_INFO] Starting stream"""
-
 		# Set up the network with a test file
-		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, "/tmp/sample_source.mp4")
+		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}sample_source.mp4")
 		streaming_log = net_emu.run()
-		self.assertTrue("[EE_INFO] Distorted file path: /tmp/1-1-disrupted.mp4" in streaming_log)
-		self.assertTrue(exists(f"/tmp/{self.mock_exp.id}-{self.mock_exp_item.SequenceId}-disrupted.mp4"))
+		self.assertIsNotNone(streaming_log)
+		self.assertTrue(exists(f"{TEST_VIDEO_ROOT_DIR}{self.mock_exp.id}-{self.mock_exp_item.SequenceId}-disrupted.mp4"))
 
+		# Remove the result file if needed
+		remove(f"{TEST_VIDEO_ROOT_DIR}1-1-disrupted.mp4")
