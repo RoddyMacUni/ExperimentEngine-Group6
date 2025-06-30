@@ -2,8 +2,6 @@ import unittest
 from video_metrics.Metric import MetricEvaluator
 import sys
 
-from vmaf.python import vmaf
-
 REF_PATH = "../../test_videos/sample_source.mp4"
 DIS_PATH = "../../test_videos/sample_degraded.mp4"
 DIF_PATH = "../../test_videos/sample_different.mp4"
