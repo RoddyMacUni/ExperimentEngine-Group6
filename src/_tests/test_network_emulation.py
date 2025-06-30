@@ -1,3 +1,5 @@
+from unittest import skipIf
+
 from exceptions.KnownProcessingException import KnownProcessingException
 from model.Experiment import Experiment, ExperimentSetItem, EncodingParameters
 from model.Network import Network
@@ -72,6 +74,7 @@ class TestNetworkEmulation(unittest.TestCase):
 	"""
 	Ensures the command used to run the video streaming is correct on the golden path
 	"""
+	@unittest.skipIf(freedesktop_os_release()['ID'] != 'arch', 'Skipping as tests are not being run on Arch linux')
 	def test_virtual_network_driver_command(self):
 		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, TEST_VIDEO_ROOT_DIR + "sample_source.mp4")
 
@@ -109,6 +112,7 @@ class TestNetworkEmulation(unittest.TestCase):
 	"""
 	Tests that the demo-mode script command produces a pseudo-successful stream
 	"""
+	@unittest.skipIf(freedesktop_os_release()['ID'] != 'arch', 'Skipping as tests are not being run on Arch linux')
 	def test_demo_streaming(self):
 		# Set the experiment item to be run as a demo network
 		self.mock_exp_item.NetworkTopologyId = '999'
