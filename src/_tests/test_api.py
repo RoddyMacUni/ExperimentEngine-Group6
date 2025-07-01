@@ -1,6 +1,7 @@
 import sys
 import os
 import requests_mock
+from requests_mock import Mocker
 import json
 
 #Add src to PATH
@@ -9,46 +10,49 @@ sys.path.append(srcPath)
 from api.ResultApi import ResultApi, ResultSet, GenericResponse
 from api.ExperimentApi import ExperimentApi, Experiment
 from api.InfrastructureApi import InfrastructureApi, Network
+from api.TokenManager import TokenManager
 import _development.StaticMockData as mockData
+
+tokenManager: TokenManager = TokenManager("http://localhost:2000/fake")
 
 #This mocker does not support request bodies
 #So this is to cover testing the result body can be parsed
 def test_results_parsing():
     object: ResultSet = mockData.getMockResultObject()
-    assert object.Partner == 'UWS'
-    assert object.Set[0].EncodingParameters.Video == "Beauty"
-    assert object.Set[0].Results.Bitrate == 100
+    assert object.OwnerId == 1
+    assert object.Sequences[0].SequenceID == 1
 
 def test_results_api():
-    resultsApi = ResultApi('http://test.com')
+    resultsApi = ResultApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.post('http://test.com/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
+        m.post('http://localhost:2000/fake/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
-        assert response.code == "200"
         assert response.message == "OK"
 
 def test_experiments_api():
-    experimentApi = ExperimentApi('http://test.com')
+    experimentApi = ExperimentApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.get('http://test.com/experiments/12345', json=json.loads(mockData.getMockExperiment()))       
+        m.get('http://localhost:2000/fake/experiments/1', json=json.loads(mockData.getMockExperiment()))       
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
-        response: Experiment = experimentApi.getExperimentById("12345")
-        assert response.id == "0467"
-        assert response.description == "An experiment testing video encodings."
-        assert response.Set[0].EncodingParameters.Video == "Beauty"
-
+        response: Experiment = experimentApi.getExperimentById("1")
+        assert response.Id == 1
+        assert response.Description == "Sample experiment for demo purposes"
+        assert response.Sequences[0].EncodingParameters != None
 
 def test_infrastructure_api():
-    infraApi = InfrastructureApi('http://test.com')
+    infraApi = InfrastructureApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
         m.get(
-            'http://test.com/Network/1',
+            'http://localhost:2000/fake/Network/1',
             json=json.loads(mockData.getMockNetwork())
         )
+        m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: Network = infraApi.getNetworkProfileById("1")
 

@@ -4,73 +4,27 @@ import json
 
 def getMockExperiment() -> str:
     return '''{
-    "id": "0467",
-    "OwnerId": 1235,
-    "createdAt": "2024-04-01T10:00:00Z",
-    "description": "An experiment testing video encodings.",
-    "experimentName": "My Test Experiment",
-    "status": "pending",
-    "Set": [
-    {
-        "SequenceId": 0,
-        "NetworkTopologyId": "0",
-        "networkDisruptionProfileId": 0,
-        "EncodingParameters": {
-            "Video": "Beauty",
-            "Duration": "5s",
-            "Frames_to_Encode": 100,
-            "FPS": 30,
-            "ResWidth": 1920,
-            "ResHeight": 1080,
-            "OutputFile": "ID_1_encoded.yuv",
-            "Encoder": "H264",
-            "EncoderType": "Standard",
-            "Bitrate": 45020,
-            "YuvFormat": "4:0:0",
-            "EncoderMode": "RANDOM ACCESS",
-            "Quality": 27,
-            "Depth": 12,
-            "Gamut": "A",
-            "QPISlice": 24,
-            "QPPSlice": 24,
-            "QPBSlice": 24,
-            "IntraPeriod": 1,
-            "BFrames": 2
+    "ExperimentName": "SampleExperiment 1",
+    "Description": "Sample experiment for demo purposes",
+    "status": "PENDING",
+    "Sequences": [
+        {
+            "NetworkTopologyId": null,
+            "NetworkDisruptionProfileId": 1,
+            "EncodingParameters": {
+                "additionalProp1": "test"
+            },
+            "SequenceId": 2,
+            "NetworkDisruptionProfile": null
         }
-    },
-    {
-        "SequenceId": 1,
-        "NetworkTopologyId": "0",
-        "networkDisruptionProfileId": 1,
-        "EncodingParameters": {
-            "Video": "Beauty",
-            "Duration": "5s",
-            "Frames_to_Encode": 100,
-            "FPS": 30,
-            "ResWidth": 1920,
-            "ResHeight": 1080,
-            "OutputFile": "ID_1_encoded.yuv",
-            "Encoder": "H264",
-            "EncoderType": "Standard",
-            "Bitrate": 45020,
-            "YuvFormat": "4:0:0",
-            "EncoderMode": "RANDOM ACCESS",
-            "Quality": 27,
-            "Depth": 12,
-            "Gamut": "A",
-            "QPISlice": 24,
-            "QPPSlice": 24,
-            "QPBSlice": 24,
-            "IntraPeriod": 1,
-            "BFrames": 2
-        }
-    }
-    ]
+    ],
+    "Id": 1,
+    "CreatedAt": "2025-06-27T13:50:42.305689",
+    "OwnerId": 1
 }'''
 
 def getMockOKResultResponse() -> str:
     return '''{
-  "code": "200",
   "message": "OK"
 }'''
 
@@ -83,69 +37,16 @@ def getMockErrorResultResponse() -> str:
 def getMockResultString() -> str:
     return '''{
     "Error": null,
-    "TargetExperimentId": 109701,
-    "Partner": "UWS",
-    "OwnerId": 1235,
-    "Set": [
+    "TargetExperimentId": 1,
+	"OwnerId": 1,
+    "Sequences": [
         {
             "EncodingParameters": {
-                "Video": "Beauty",
-                "Duration": "5s",
-                "Frames_to_Encode": 100,
-                "FPS": 30,
-                "ResWidth": 1920,
-                "ResHeight": 1080,
-                "OutputFile": "ID_1_encoded.yuv",
-                "Encoder": "H264",
-                "EncoderType": "Standard",
-                "Bitrate": 45020,
-                "YuvFormat": "4:0:0",
-                "EncoderMode": "RANDOM ACCESS",
-                "Quality": 27,
-                "Depth": 12,
-                "Gamut": "A",
-                "QPISlice": 24,
-                "QPPSlice": 24,
-                "QPBSlice": 24,
-                "IntraPeriod": 1,
-                "BFrames": 2
+                "additionalProp1": "test"
             },
             "SequenceID": 1,
-            "Network": "001003",
-            "DistruptionProfile": 1,
-            "Results": {
-                "Bitrate": 100,
-                "PSNR": 100,
-                "SSIM": 100,
-                "VMAF": 100
-            }
-        },
-        {
-            "EncodingParameters": {
-                "Video": "Beauty",
-                "Duration": "5s",
-                "Frames_to_Encode": 100,
-                "FPS": 30,
-                "ResWidth": 1920,
-                "ResHeight": 1080,
-                "OutputFile": "ID_1_encoded.yuv",
-                "Encoder": "H264",
-                "EncoderType": "Standard",
-                "Bitrate": 45020,
-                "YuvFormat": "4:0:0",
-                "EncoderMode": "RANDOM ACCESS",
-                "Quality": 27,
-                "Depth": 12,
-                "Gamut": "A",
-                "QPISlice": 24,
-                "QPPSlice": 24,
-                "QPBSlice": 24,
-                "IntraPeriod": 1,
-                "BFrames": 2
-            },
-            "SequenceID": 1,
-            "Network": "001003",
-            "DistruptionProfile": 1,
+            "NetworkTopologyId": 1,
+            "DistruptionProfileId": 1,
             "Results": {
                 "Bitrate": 100,
                 "PSNR": 100,
