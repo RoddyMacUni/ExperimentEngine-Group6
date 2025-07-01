@@ -44,18 +44,18 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
         videoMetricValues = MetricEvaluator.evaluate(fileName, disrupted_file) #TODO: Change second param to saved degraded video file, just keep it as sample for now
         videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
 
-        corrospondingExperiment: ExperimentSetItem = experiment.Set[videoNumber]
-        videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, videoNumber, corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
+    corrospondingExperiment: ExperimentSetItem = experiment.Set[int(videoNumber)]
+    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
 
-        #Build partial result file
-        partialResultsFile: ResultSet = ResultSet(None, "", experiment.id, experiment.OwnerId, [ videoResultSetItem ])
+    #Build partial result file
+    partialResultsFile: ResultSet = ResultSet(None, "", int(experiment.id), experiment.OwnerId, [ videoResultSetItem ])
+    
+    #Compile full result file or save next step of partial results file 
+    finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
 
-        #Compile full result file or save next step of partial results file
-        finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
-
-        #If partial results file is not complete, start next loop
-        if finalResultsFile is None:
-            return
+    #If partial results file is not complete, start next loop
+    if finalResultsFile is None:
+        return  
     
     #Otherwise, send results
     try:
