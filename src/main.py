@@ -30,19 +30,18 @@ def processExperiment(fileName: str, experimentId: str, videoNumber: int):
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
-    # Run each of the videos in the experiment through the network
-    for experimentItem in experiment.Set:
+    # Run the video through the network
+    experimentItem: ExperimentSetItem = experiment.Set[videoNumber]
+    net: Network = InfrastructureApi.getNetworkProfileById(str(experimentItem.networkDisruptionProfileId))
+    net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment, net, fileName)
+    disrupted_file, streaming_log = net_emulator.run()
 
-        net: Network = InfrastructureApi.getNetworkProfileById(str(experimentItem.networkDisruptionProfileId))
-        net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment, net, fileName)
-        disrupted_file, streaming_log = net_emulator.run()
+    # Run through network
+    bitrate = MetricEvaluator.evaluateBitRate(streaming_log) # Bitrate metric is gathered at streaming stage
 
-        # Run through network
-        bitrate = MetricEvaluator.evaluateBitRate(streaming_log) # Bitrate metric is gathered at streaming stage
-
-        # Get metrics
-        videoMetricValues = MetricEvaluator.evaluate(fileName, disrupted_file) #TODO: Change second param to saved degraded video file, just keep it as sample for now
-        videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+    # Get metrics
+    videoMetricValues = MetricEvaluator.evaluate(fileName, disrupted_file) #TODO: Change second param to saved degraded video file, just keep it as sample for now
+    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
 
     corrospondingExperiment: ExperimentSetItem = experiment.Set[int(videoNumber)]
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.networkDisruptionProfileId, videoResults) #TODO create constructor here
