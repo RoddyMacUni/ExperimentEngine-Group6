@@ -14,12 +14,14 @@ class DirectoryListener:
     errorHandlerFunction: Callable[[KnownProcessingException], None] #takes and handles a known processing exception
 
     stopFlag: bool = False
+    sleepTime: int = 1
 
-    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None], errorHandlerFunction: Callable[[KnownProcessingException], None]):
+    def __init__(self, targetFolder: str, ignoreFiles: list[str], processorFunction: Callable[[str, str], None], errorHandlerFunction: Callable[[KnownProcessingException], None], sleepTime: int = 1):
         self.targetFolder = targetFolder
         self.ignoreFiles = ignoreFiles
         self.processorFunction = processorFunction
         self.errorHandlerFunction = errorHandlerFunction
+        self.sleepTime = sleepTime
 
         self.ignoreFiles.append("poison")
 
@@ -78,7 +80,7 @@ class DirectoryListener:
                 else: 
                     os.remove(self.targetFolder + "/" + files[0])
             else:
-                time.sleep(1)
+                time.sleep(self.sleepTime)
                 counter.increment()
 
     #Set stop flag for listener

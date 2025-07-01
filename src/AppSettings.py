@@ -9,6 +9,9 @@ class AppSettings:
     VideoRevieverTargetFolder: str
     EncodedVideoFileNamePattern: str
     PartialResulsTargetFolder: str
+    AuthEndpoint: str
+    Username: str
+    Password: str
 
 def GetAppSettings():
     import os 
