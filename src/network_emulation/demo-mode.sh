@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 # ExperimentEngine-Group6 reports to STDOUT so this replicates that
 cat << MOCK_STREAM_DATA_STDOUT > /dev/stdout
 [EE_INFO] Sequence_number 1

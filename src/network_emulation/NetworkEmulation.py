@@ -31,11 +31,11 @@ class NetworkEmulator:
 
         # Ensure the file still exists
         if not exists(source_filename):
-            raise KnownProcessingException(f"source file f{source_filename} not found", self.parent_experiment.id)
+            raise KnownProcessingException(f"source file f{source_filename} not found", str(self.parent_experiment.Id))
 
         # Set the source and destination paths
         self.source_file = source_filename
-        self.disrupted_file = PurePath(PurePath(source_filename).parent, f"{parent_experiment.id}-{experiment_item.SequenceId}-disrupted.mp4").__str__()
+        self.disrupted_file = PurePath(PurePath(source_filename).parent, f"{parent_experiment.Id}-{experiment_item.SequenceId}-disrupted.mp4").__str__()
 
         # Generate the command required to run the experiment
         self.command = self.build_experiment_command()
@@ -56,7 +56,7 @@ class NetworkEmulator:
                                   f"{self.disrupted_file}")
             case 999: # A demo mode
                 driver_command = (f"bash /root/ExperimentEngine-Group6/src/network_emulation/demo-mode.sh"
-                                  f" /tmp/sample_source.mp4"
+                                  f" {PurePath(self.disrupted_file).parent}/sample_degraded.mp4 "
                                   f" {self.disrupted_file}")
 
             case _:

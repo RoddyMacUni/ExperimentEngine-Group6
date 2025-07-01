@@ -1,7 +1,5 @@
-from unittest import skipIf
-
 from exceptions.KnownProcessingException import KnownProcessingException
-from model.Experiment import Experiment, ExperimentSetItem, EncodingParameters
+from model.Experiment import Experiment, SequenceItem
 from model.Network import Network
 from network_emulation.NetworkEmulation import NetworkEmulator
 import unittest
@@ -12,54 +10,30 @@ from os import remove
 TEST_VIDEO_ROOT_DIR = "/root/ExperimentEngine-Group6/test_videos/"
 
 class TestNetworkEmulation(unittest.TestCase):
-	mock_exp_item: ExperimentSetItem
+	mock_exp_item: SequenceItem
 	mock_exp: Experiment
 	mock_network: Network
-	mock_encoding_params: EncodingParameters
 
 	"""
 	Sets up some mock experiment data - these can be manipulated as required by the tests
 	"""
 	@classmethod
 	def setUp(cls):
-		cls.mock_encoding_params: EncodingParameters = EncodingParameters(
-			Video="Beauty",
-			Duration="5s",
-			Frames_to_Encode=100,
-			FPS=30,
-			ResWidth=1920,
-			ResHeight=1080,
-			OutputFile="ID_1_encoded.yuv",
-			Encoder="H264",
-			EncoderType="Standard",
-			Bitrate=45020,
-			YuvFormat="4:0:0",
-			EncoderMode="RANDOM ACCESS",
-			Quality=27,
-			Depth=12,
-			Gamut="A",
-			QPISlice=24,
-			QPPSlice=24,
-			QPBSlice=24,
-			IntraPeriod=1,
-			BFrames=2
-		)
-
-		cls.mock_exp_item: ExperimentSetItem = ExperimentSetItem(
+		cls.mock_exp_item: SequenceItem = SequenceItem(
 			SequenceId=1,
-			NetworkTopologyId='001',
-			networkDisruptionProfileId=10,
-			EncodingParameters=cls.mock_encoding_params,
+			NetworkTopologyId=1,
+			NetworkDisruptionProfileId=10,
+			EncodingParameters=dict(),
 		)
 
 		cls.mock_exp: Experiment = Experiment(
-			id="1",
+			Id=1,
 			OwnerId=1,
-			experimentName="test_experiment",
-			createdAt="",
-			description="",
+			ExperimentName="test_experiment",
+			CreatedAt="",
+			Description="",
 			status="",
-			Set=[cls.mock_exp_item]
+			Sequences=[cls.mock_exp_item]
 		)
 
 		cls.mock_network: Network = Network(
@@ -85,7 +59,7 @@ class TestNetworkEmulation(unittest.TestCase):
 	"""
 	def test_bad_network_topo(self):
 		# Set a network topology id that doesn't exist
-		self.mock_exp_item.NetworkTopologyId = '000'
+		self.mock_exp_item.NetworkTopologyId = 0
 
 		with self.assertRaises(KnownProcessingException):
 			NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}sample_source.mp4")
@@ -115,13 +89,13 @@ class TestNetworkEmulation(unittest.TestCase):
 	@unittest.skipIf(freedesktop_os_release()['ID'] != 'arch', 'Skipping as tests are not being run on Arch linux')
 	def test_demo_streaming(self):
 		# Set the experiment item to be run as a demo network
-		self.mock_exp_item.NetworkTopologyId = '999'
+		self.mock_exp_item.NetworkTopologyId = 999
 
 		# Set up the network with a test file
 		net_emu: NetworkEmulator = NetworkEmulator(self.mock_exp_item, self.mock_exp, self.mock_network, f"{TEST_VIDEO_ROOT_DIR}sample_source.mp4")
 		streaming_log = net_emu.run()
 		self.assertIsNotNone(streaming_log)
-		self.assertTrue(exists(f"{TEST_VIDEO_ROOT_DIR}{self.mock_exp.id}-{self.mock_exp_item.SequenceId}-disrupted.mp4"))
+		self.assertTrue(exists(f"{TEST_VIDEO_ROOT_DIR}{self.mock_exp.Id}-{self.mock_exp_item.SequenceId}-disrupted.mp4"))
 
 		# Remove the result file if needed
 		remove(f"{TEST_VIDEO_ROOT_DIR}1-1-disrupted.mp4")
