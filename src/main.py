@@ -34,9 +34,9 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
     # Run the video through the network
-    experimentItem: ExperimentSetItem = experiment.Set[videoNumber]
-    net: Network = InfrastructureApi.getNetworkProfileById(str(experimentItem.networkDisruptionProfileId))
-    net_emulator: NetworkEmulator = NetworkEmulator(experimentItem, experiment, net, fileName)
+    sequence_item: SequenceItem = experiment.Sequences[videoNumber]
+    net: Network = InfrastructureApi.getNetworkProfileById(str(sequence_item.NetworkTopologyId))
+    net_emulator: NetworkEmulator = NetworkEmulator(sequence_item, experiment, net, fileName)
     disrupted_file, streaming_log = net_emulator.run()
 
     # Run through network
