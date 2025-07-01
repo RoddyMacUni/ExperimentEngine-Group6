@@ -44,7 +44,6 @@ def test_experiments_api():
         assert response.Description == "Sample experiment for demo purposes"
         assert response.Sequences[0].EncodingParameters != None
 
-
 def test_infrastructure_api():
     infraApi = InfrastructureApi('http://localhost:2000/fake', tokenManager)
 

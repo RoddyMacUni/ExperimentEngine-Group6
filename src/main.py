@@ -32,10 +32,10 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
-    #Run through network
-    bitrate = 100.0 # Bitrate metric is gathered at streaming stage
+    # Run through network
+    bitrate = MetricEvaluator.evaluateBitRate("[out#0/mp4 @ 0x63bf77a99380] video:266KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.627007%\nframe=  296 fps= 10 q=-1.0 Lsize=     270KiB time=00:00:09.80 bitrate= 225.8kbits/s dup=0 drop=4 speed=0.334x\n[libx264 @ 0x63bf77a5fc80] frame I:2     Avg QP:21.26  size: 14844") # Bitrate metric is gathered at streaming stage
 
-    #Get metrics
+    # Get metrics
     videoMetricValues = MetricEvaluator.evaluate(fileName, "../../test_videos/sample_degraded.mp4") #TODO: Change second param to saved degraded video file, just keep it as sample for now
     videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
 
@@ -43,7 +43,7 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
 
     #Build partial result file
-    partialResultsFile: ResultSet = ResultSet(None, experiment.Id, experiment.OwnerId, [videoResultSetItem])
+    partialResultsFile: ResultSet = ResultSet(None, "", experiment.Id), experiment.OwnerId, [ videoResultSetItem ])
     
     #Compile full result file or save next step of partial results file 
     finalResultsFile: ResultSet | None = ResultCompiler().CompileResultsFile(partialResultsFile, experiment) #TODO: if this errors, it should delete corrosponding saved files
