@@ -1,9 +1,10 @@
 from exceptions.KnownProcessingException import KnownProcessingException
 from api.ExperimentApi import ExperimentApi, Experiment
+from api.InfrastructureApi import InfrastructureApi
 from api.ResultApi import ResultApi, GenericResponse
 from AppSettings import AppSettings, GetAppSettings
-import os
-import time
+from network_emulation.NetworkEmulation import NetworkEmulator
+from model.Network import Network
 from processing.DirectoryListener import DirectoryListener
 from model.ResultSet import ResultSet, VideoResultMetrics, ResultSetItem
 from model.Experiment import SequenceItem
@@ -19,7 +20,7 @@ tokenManager: TokenManager = TokenManager(appSettings.AuthEndpoint)
 #IMPORTANT
 #Any exception in here that can pass ANY information to results should be a KnownProcessingException
 #This will include ALL exceptions after the experiment API call
-#DirectoryListener will handle printing and sending to poision queue, you only need to throw the KnownProcessingException
+#DirectoryListener will handle printing and sending to poison queue, you only need to throw the KnownProcessingException
 #Any known exception messages should be short and to the point, as they will be sent to results
 #TODO: We may want to add a way to send more detailed information to a log file, low priority
 def processExperiment(experimentId: str, fileName: str, videoNumber: int):
@@ -32,12 +33,26 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     except Exception as e:
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
+    # Run the video through the network
+    sequence_item: SequenceItem = experiment.Sequences[int(videoNumber)]
+
+    # Get the network configuration from the Infrastructure API
+    try:
+        network: Network = InfrastructureApi(appSettings.InfrastructureEndpoint, tokenManager).getNetworkProfileById(str(sequence_item.NetworkTopologyId))
+    except Exception as e:
+        raise Exception("Failed to get network profile for " + experimentId + ": " + str(e))
+
+    net_emulator: NetworkEmulator = NetworkEmulator(sequence_item, experiment, network, f"{fileName}")
+    disrupted_file, streaming_log = net_emulator.run()
+    print(f"Video {fileName} streaming completed")
     # Run through network
-    bitrate = MetricEvaluator.evaluateBitRate("[out#0/mp4 @ 0x63bf77a99380] video:266KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 1.627007%\nframe=  296 fps= 10 q=-1.0 Lsize=     270KiB time=00:00:09.80 bitrate= 225.8kbits/s dup=0 drop=4 speed=0.334x\n[libx264 @ 0x63bf77a5fc80] frame I:2     Avg QP:21.26  size: 14844") # Bitrate metric is gathered at streaming stage
+    bitrate = MetricEvaluator.evaluateBitRate(streaming_log) # Bitrate metric is gathered at streaming stage
+    print(f"Bitrate extracted")
 
     # Get metrics
-    videoMetricValues = MetricEvaluator.evaluate(fileName, "../../test_videos/sample_degraded.mp4") #TODO: Change second param to saved degraded video file, just keep it as sample for now
-    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+    videoMetricValues = MetricEvaluator.evaluate(f"{appSettings.VideoRevieverTargetFolder}/{fileName}", disrupted_file)
+    # videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues[0], videoMetricValues[1], videoMetricValues[2])
 
     corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
