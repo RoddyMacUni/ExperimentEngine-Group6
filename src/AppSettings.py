@@ -5,6 +5,7 @@ import json
 class AppSettings:
     ExperimentsEndpoint: str
     ResultsEndpoint: str
+    InfrastructureEndpoint: str
     ListenerTargetFolder: str
     VideoRevieverTargetFolder: str
     EncodedVideoFileNamePattern: str
@@ -15,6 +16,8 @@ class AppSettings:
 
 def GetAppSettings():
     import os 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    dictionary = json.load(open(os.path.abspath(os.path.dirname(__file__)) + "/appsettings.json"))
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
+    #dictionary = json.load(open(os.path.abspath(os.path.dirname(__file__)) + "/appsettings.json"))
+    dir_path = "/root/ExperimentEngine-Group6/src"
+    dictionary = json.load(open(f"{dir_path}/appsettings.json"))
     return AppSettings(**dictionary)

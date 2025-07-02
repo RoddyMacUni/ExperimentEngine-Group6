@@ -9,12 +9,12 @@ def getMockExperiment() -> str:
     "status": "PENDING",
     "Sequences": [
         {
-            "NetworkTopologyId": null,
+            "NetworkTopologyId": 1,
             "NetworkDisruptionProfileId": 1,
             "EncodingParameters": {
                 "additionalProp1": "test"
             },
-            "SequenceId": 2,
+            "SequenceId": 0,
             "NetworkDisruptionProfile": null
         }
     ],
@@ -45,7 +45,7 @@ def getMockResultString() -> str:
                 "additionalProp1": "test"
             },
             "SequenceID": 1,
-            "NetworkTopologyId": 1,
+            "NetworkTopologyId": 999,
             "DistruptionProfileId": 1,
             "Results": {
                 "Bitrate": 100,
@@ -64,7 +64,7 @@ def getMockResultObject() -> ResultSet:
 def getMockNetwork() -> str:
     return '''{
         "name": "Profile Network Name",
-        "id": 1,
+        "id": 999,
         "packetLoss": 5,
         "delay": 20,
         "jitter": 3,
