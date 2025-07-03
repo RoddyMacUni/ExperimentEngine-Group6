@@ -68,6 +68,6 @@ def IncorrectDemoToOurExperiment(b: IncorrectDemoExperiment) -> Experiment:
 
     for i in range(len(b.Sequences)):
         bs: IncorrectDemoExperimentSequenceItem = b.Sequences[i]
-        sequenceItems.append(SequenceItem(bs.SequenceId, 0, 0, bs.EncodingParameters))
+        sequenceItems.append(SequenceItem(bs.SequenceId, 1, 0, bs.EncodingParameters))
 
     return Experiment(b.Id, b.OwnerId, b.ExperimentName, b.CreatedAt, b.Description, b.status, sequenceItems)

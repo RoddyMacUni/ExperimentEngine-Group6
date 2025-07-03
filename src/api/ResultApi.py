@@ -9,7 +9,7 @@ import requests, json, os
 class ResultApi(BaseAuthenticatedApi):
     def sendResults(self, experimentId: str, results: ResultSet) -> GenericResponse:
         try:
-            file = open("temp.json", 'w+')
+            file = open(f"temp.json", 'w+')
             json.dump(asdict(results), file)
             response = requests.post(url=(self.baseUrl + "/experiments/" + experimentId + "/results"), headers=self.tokenManager.getTokenAsAuthHeader(), files={"file": file})
         except Exception as e:

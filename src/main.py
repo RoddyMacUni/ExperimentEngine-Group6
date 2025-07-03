@@ -25,6 +25,7 @@ tokenManager: TokenManager = TokenManager(appSettings.AuthEndpoint)
 #TODO: We may want to add a way to send more detailed information to a log file, low priority
 def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
+    videoNumber = int(videoNumber)
 
     #Get data
     experiment: Experiment
@@ -34,7 +35,13 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
     # Run the video through the network
-    sequence_item: SequenceItem = experiment.Sequences[int(videoNumber)]
+    # sequence_item: SequenceItem = next((obj for obj in experiment.Sequences if obj.SequenceId == int(videoNumber)), None)
+    for sequence in experiment.Sequences:
+        if sequence.SequenceId == int(videoNumber):
+            sequence_item: SequenceItem = sequence
+
+    if sequence_item is None:
+        raise Exception("Failed to get sequence item for " + experimentId + ": " + str(experiment))
 
     # Get the network configuration from the Infrastructure API
     try:
@@ -54,7 +61,8 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     # videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
     videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues[0], videoMetricValues[1], videoMetricValues[2])
 
-    corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
+    # corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
+    corrospondingExperiment: SequenceItem = next((obj for obj in experiment.Sequences if obj.SequenceId == int(videoNumber)), None)
     videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
 
     #Build partial result file
