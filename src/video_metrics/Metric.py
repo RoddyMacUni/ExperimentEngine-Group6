@@ -35,3 +35,13 @@ class MetricEvaluator:
             psnr = "9999.0"
 
         return float(vmaf), float(ssim), float(psnr)
+
+    def evaluateBitRate(ffmpeg_output: str) -> float:
+        bitrate_regex = re.search(r'bitrate=\s*([0-9]+(?:\.[0-9]+)?)kbits/s', ffmpeg_output)
+
+        if bitrate_regex:
+            bitrate = float(bitrate_regex.group(1))
+        else:
+            raise ValueError("Failed to get bitrate from " + ffmpeg_output)
+
+        return bitrate

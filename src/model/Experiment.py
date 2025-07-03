@@ -1,42 +1,18 @@
 from dataclasses import dataclass
 
-@dataclass 
-class EncodingParameters:
-    Video: str
-    Duration: str
-    Frames_to_Encode: int
-    FPS: int
-    ResWidth: int
-    ResHeight: int
-    OutputFile: str
-    Encoder: str
-    EncoderType: str
-    Bitrate: int
-    YuvFormat: str
-    EncoderMode: str
-    Quality: int
-    Depth: int
-    Gamut: str
-    QPISlice: int
-    QPPSlice: int
-    QPBSlice: int
-    IntraPeriod: int
-    BFrames: int
-
-
 @dataclass
-class ExperimentSetItem:
+class SequenceItem:
     SequenceId: int
-    NetworkTopologyId: str
-    networkDisruptionProfileId: int
-    EncodingParameters: EncodingParameters
+    NetworkTopologyId: int | None #TODO remove this, this is a bug on the backend!!
+    NetworkDisruptionProfileId: int
+    EncodingParameters: dict
 
 @dataclass
 class Experiment:
-    id: str
+    Id: int
     OwnerId: int
-    experimentName: str
-    createdAt: str
-    description: str
+    ExperimentName: str
+    CreatedAt: str
+    Description: str
     status: str
-    Set: list[ExperimentSetItem]
+    Sequences: list[SequenceItem]

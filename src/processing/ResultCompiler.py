@@ -17,15 +17,15 @@ class ResultCompiler:
 
     def getFileName(self, experiment: Experiment) -> str:
         #Returns the file name for the partial results file
-        return self.partialResultsTargetFolder + "/" + experiment.id
+        return self.partialResultsTargetFolder + "/" + str(experiment.Id)
 
     #Attempts to compile full result from partial one
     #Requires partialResults to contain all top-level data
     #Returns none if could not compile full result
     def CompileResultsFile(self, partialResults: ResultSet, experiment: Experiment) -> ResultSet | None:
         #If these do not match, it is a logical error in the program
-        if not (partialResults.TargetExperimentId == int(experiment.id)): raise Exception("Experiment Id's do not match")
-
+        if not (int(partialResults.TargetExperimentId) == int(experiment.Id)): raise Exception("Experiment Id's do not match")
+    
         #Check if existing results file exists for experiment, if one exists load and append data
         currentResults: ResultSet
         if os.path.exists(self.getFileName(experiment)):
@@ -34,13 +34,13 @@ class ResultCompiler:
             currentResults: ResultSet = from_dict(data_class=ResultSet, data=json.loads(file.read()))
             file.close()
 
-            currentResults.Set.append(partialResults.Set)
+            currentResults.Sequences.append(partialResults.Sequences)
         #Otherwise, use partial file
         else:
             currentResults = partialResults
 
         #Check if results has all sequence items
-        if len(currentResults.Set) == len(experiment.Set):
+        if len(currentResults.Sequences) == len(experiment.Sequences):
             if os.path.exists(self.getFileName(experiment)):
                 os.remove(self.getFileName(experiment))
             return currentResults
