@@ -3,9 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/_development" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/_tests" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/api" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/_development" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.13.3 WSL (ne-arch): (/root/ExperimentEngine-Group6/.venv/bin/python)" jdkType="Python SDK" />
