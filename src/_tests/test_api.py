@@ -1,8 +1,11 @@
 import sys
 import os
 import requests_mock
-from requests_mock import Mocker
+import pytest
 import json
+from dacite import from_dict, DaciteError
+
+from StaticMockData import getInvalidDataTestCases
 
 #Add src to PATH
 srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -26,7 +29,7 @@ def test_results_api():
     resultsApi = ResultApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.post('http://localhost:2000/fake/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))       
+        m.post('http://localhost:2000/fake/experiments/12345/results', json=json.loads(mockData.getMockOKResultResponse()))
         m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: GenericResponse = resultsApi.sendResults("12345", mockData.getMockResultObject())
@@ -36,7 +39,7 @@ def test_experiments_api():
     experimentApi = ExperimentApi('http://localhost:2000/fake', tokenManager)
 
     with requests_mock.Mocker() as m:
-        m.get('http://localhost:2000/fake/experiments/1', json=json.loads(mockData.getMockExperiment()))       
+        m.get('http://localhost:2000/fake/experiments/1', json=json.loads(mockData.getMockExperiment()))
         m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
         response: Experiment = experimentApi.getExperimentById("1")
@@ -62,3 +65,10 @@ def test_infrastructure_api():
         assert response.delay == 20
         assert response.jitter == 3
         assert response.bandwidth == 100
+
+
+
+@pytest.mark.parametrize("case", getInvalidDataTestCases(), ids=[c["name"] for c in getInvalidDataTestCases()])
+def test_invalid_json_deserialization_raises(case):
+    with pytest.raises(DaciteError):
+        from_dict(data_class=case["model"], data=json.loads(case["json_str"]))
