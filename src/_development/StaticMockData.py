@@ -3,25 +3,35 @@ from model.ResultSet import ResultSet
 import json
 
 def getMockExperiment() -> str:
-    return '''{
-    "ExperimentName": "SampleExperiment 1",
-    "Description": "Sample experiment for demo purposes",
-    "status": "PENDING",
-    "Sequences": [
-        {
-            "NetworkTopologyId": 1,
-            "NetworkDisruptionProfileId": 1,
-            "EncodingParameters": {
-                "additionalProp1": "test"
-            },
-            "SequenceId": 0,
-            "NetworkDisruptionProfile": null
-        }
-    ],
-    "Id": 1,
-    "CreatedAt": "2025-06-27T13:50:42.305689",
-    "OwnerId": 1
-}'''
+    return '''
+    {
+  "ExperimentName": "EE-G6-testing",
+  "Description": "string",
+  "status": "PENDING",
+  "Sequences": [
+    {
+      "NetworkTopologyId": {
+        "networkName": "Network Profile 1",
+        "description": "Description of Network Profile 1",
+        "packetLoss": 10,
+        "delay": 1,
+        "jitter": 1,
+        "bandwidth": 32,
+        "network_profile_id": 1
+      },
+      "NetworkDisruptionProfileId": 0,
+      "EncodingParameters": {
+        "additionalProp1": {}
+      },
+      "SequenceId": 15,
+      "NetworkDisruptionProfile": null
+    }
+  ],
+  "Id": 7,
+  "CreatedAt": "2025-07-03T08:54:18.483473",
+  "OwnerId": 17
+}
+    '''
 
 def getMockOKResultResponse() -> str:
     return '''{
