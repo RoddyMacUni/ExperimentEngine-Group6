@@ -6,6 +6,4 @@ import requests
 
 class InfrastructureApi(BaseAuthenticatedApi):
     def getNetworkProfileById(self, id: str) -> Network:
-        response = requests.get(self.baseUrl + "/Network/" + id, headers=self.tokenManager.getTokenAsAuthHeader())
-        response.raise_for_status()
-        return from_dict(data_class=Network, data=response.json())
+        return Network("Faked Network", 0, 10, 1, 1, 32)
