@@ -63,7 +63,7 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
 
     # corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
     corrospondingExperiment: SequenceItem = next((obj for obj in experiment.Sequences if obj.SequenceId == int(videoNumber)), None)
-    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
+    videoResultSetItem: ResultSetItem = ResultSetItem(SequenceID=corrospondingExperiment.SequenceId, NetworkTopologyId=corrospondingExperiment.NetworkTopologyId,DistruptionProfileId= corrospondingExperiment.NetworkDisruptionProfileId,EncodingParameters=corrospondingExperiment.EncodingParameters, Results=videoResults)
 
     #Build partial result file
     partialResultsFile: ResultSet = ResultSet(None, experiment.Id, experiment.OwnerId, [videoResultSetItem])

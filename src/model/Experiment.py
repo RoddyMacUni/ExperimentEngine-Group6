@@ -49,8 +49,8 @@ class Experiment:
 @dataclass 
 class IncorrectDemoExperimentSequenceItem:
     SequenceId: int
-    #NetworkTopologyId: Network         just ignoring this and setting to 0 below
-    #NetworkDisruptionProfileId:        int and this since its null above 
+    NetworkTopologyId: int
+    NetworkDisruptionProfileId: int
     EncodingParameters: dict
 
 @dataclass
@@ -68,6 +68,6 @@ def IncorrectDemoToOurExperiment(b: IncorrectDemoExperiment) -> Experiment:
 
     for i in range(len(b.Sequences)):
         bs: IncorrectDemoExperimentSequenceItem = b.Sequences[i]
-        sequenceItems.append(SequenceItem(bs.SequenceId, 1, 0, bs.EncodingParameters))
+        sequenceItems.append(SequenceItem(bs.SequenceId, bs.NetworkTopologyId, bs.NetworkDisruptionProfileId, bs.EncodingParameters))
 
     return Experiment(b.Id, b.OwnerId, b.ExperimentName, b.CreatedAt, b.Description, b.status, sequenceItems)
