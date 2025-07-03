@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/api" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10.12 WSL (Ubuntu-22.04): (/home/ruairidh/.virtualenvs/ExperimentEngine-Group6/bin/python)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.13.3 WSL (ne-arch): (/root/ExperimentEngine-Group6/.venv/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
