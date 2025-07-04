@@ -1,8 +1,10 @@
 import sys
 import os
 import requests_mock
-from requests_mock import Mocker
 import json
+from dacite import from_dict, DaciteError
+from StaticMockData import getInvalidDataTestCases
+import pytest
 
 #Add src to PATH
 srcPath: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -62,3 +64,9 @@ def test_infrastructure_api():
         assert response.delay == 20
         assert response.jitter == 3
         assert response.bandwidth == 100
+
+
+@pytest.mark.parametrize("case", getInvalidDataTestCases(), ids=[c["name"] for c in getInvalidDataTestCases()])
+def test_invalid_json_deserialization_raises(case):
+    with pytest.raises(DaciteError):
+        from_dict(data_class=case["model"], data=json.loads(case["json_str"]))
