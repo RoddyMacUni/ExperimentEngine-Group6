@@ -10,6 +10,8 @@ def test_will_use_saved_token():
     with requests_mock.Mocker() as m:
         m.post('http://localhost:2000/fake/auth/login', text='{"token": "abc"}')
 
+        tm.getToken()
+
         tm.token = "123"
 
         assert tm.getToken() == "123"

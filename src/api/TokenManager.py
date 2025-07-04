@@ -28,9 +28,16 @@ class TokenManager(BaseApi):
         responseObject: tokenResponse = from_dict(data_class=tokenResponse, data=json.loads(response.text))
         self.lastFetched = datetime.datetime.now()
         return responseObject.token
+    
+    def tokenNeedsRefreshed(self) -> bool:
+        if(self.lastFetched is None):
+            return True
+        if(datetime.datetime.now() > self.lastFetched + datetime.timedelta(0, self.refreshSeconds)):
+            return True
+        return False
 
     def getToken(self):
-        if(self.token is None or datetime.datetime.now > self.lastFetched + datetime.timedelta(0, self.refreshSeconds)):
+        if(self.token is None or self.tokenNeedsRefreshed()):
             self.token = self.fetchNewToken()
         return self.token
     
