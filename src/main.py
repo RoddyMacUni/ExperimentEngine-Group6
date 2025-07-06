@@ -20,11 +20,12 @@ tokenManager: TokenManager = TokenManager(appSettings.AuthEndpoint)
 #IMPORTANT
 #Any exception in here that can pass ANY information to results should be a KnownProcessingException
 #This will include ALL exceptions after the experiment API call
-#DirectoryListener will handle printing and sending to poision queue, you only need to throw the KnownProcessingException
+#DirectoryListener will handle printing and sending to poison queue, you only need to throw the KnownProcessingException
 #Any known exception messages should be short and to the point, as they will be sent to results
 #TODO: We may want to add a way to send more detailed information to a log file, low priority
 def processExperiment(experimentId: str, fileName: str, videoNumber: int):
     print("Processing experiment: " + experimentId)
+    videoNumber = int(videoNumber)
 
     #Get data
     experiment: Experiment
@@ -34,20 +35,35 @@ def processExperiment(experimentId: str, fileName: str, videoNumber: int):
         raise Exception("Failed to get experiment data for " + experimentId + ": " + str(e))
 
     # Run the video through the network
-    sequence_item: SequenceItem = experiment.Sequences[videoNumber]
-    net: Network = InfrastructureApi.getNetworkProfileById(str(sequence_item.NetworkTopologyId))
-    net_emulator: NetworkEmulator = NetworkEmulator(sequence_item, experiment, net, fileName)
-    disrupted_file, streaming_log = net_emulator.run()
+    # sequence_item: SequenceItem = next((obj for obj in experiment.Sequences if obj.SequenceId == int(videoNumber)), None)
+    for sequence in experiment.Sequences:
+        if sequence.SequenceId == int(videoNumber):
+            sequence_item: SequenceItem = sequence
 
+    if sequence_item is None:
+        raise Exception("Failed to get sequence item for " + experimentId + ": " + str(experiment))
+
+    # Get the network configuration from the Infrastructure API
+    try:
+        network: Network = InfrastructureApi(appSettings.InfrastructureEndpoint, tokenManager).getNetworkProfileById(str(sequence_item.NetworkTopologyId))
+    except Exception as e:
+        raise Exception("Failed to get network profile for " + experimentId + ": " + str(e))
+
+    net_emulator: NetworkEmulator = NetworkEmulator(sequence_item, experiment, network, f"{fileName}")
+    disrupted_file, streaming_log = net_emulator.run()
+    print(f"Video {fileName} streaming completed")
     # Run through network
     bitrate = MetricEvaluator.evaluateBitRate(streaming_log) # Bitrate metric is gathered at streaming stage
+    print(f"Bitrate extracted")
 
     # Get metrics
-    videoMetricValues = MetricEvaluator.evaluate(fileName, disrupted_file) #TODO: Change second param to saved degraded video file, just keep it as sample for now
-    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+    videoMetricValues = MetricEvaluator.evaluate(f"{appSettings.VideoRevieverTargetFolder}/{fileName}", disrupted_file)
+    # videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues.index(0), videoMetricValues.index(1), videoMetricValues.index(2))
+    videoResults: VideoResultMetrics = VideoResultMetrics(bitrate, videoMetricValues[0], videoMetricValues[1], videoMetricValues[2])
 
-    corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
-    videoResultSetItem: ResultSetItem = ResultSetItem(corrospondingExperiment.EncodingParameters, int(videoNumber), corrospondingExperiment.NetworkTopologyId, corrospondingExperiment.NetworkDisruptionProfileId, videoResults) #TODO create constructor here
+    # corrospondingExperiment: SequenceItem = experiment.Sequences[int(videoNumber)]
+    corrospondingExperiment: SequenceItem = next((obj for obj in experiment.Sequences if obj.SequenceId == int(videoNumber)), None)
+    videoResultSetItem: ResultSetItem = ResultSetItem(SequenceID=corrospondingExperiment.SequenceId, NetworkTopologyId=corrospondingExperiment.NetworkTopologyId,DistruptionProfileId= corrospondingExperiment.NetworkDisruptionProfileId,EncodingParameters=corrospondingExperiment.EncodingParameters, Results=videoResults)
 
     #Build partial result file
     partialResultsFile: ResultSet = ResultSet(None, experiment.Id, experiment.OwnerId, [videoResultSetItem])

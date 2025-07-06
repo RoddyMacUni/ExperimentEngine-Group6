@@ -6,3 +6,4 @@ def test_can_get_appsettings():
     assert appSettings is not None
     assert len(appSettings.ExperimentsEndpoint) > 0
     assert len(appSettings.ResultsEndpoint) > 0
+    assert len(appSettings.InfrastructureEndpoint) > 0

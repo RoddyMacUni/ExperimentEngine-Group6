@@ -9,9 +9,9 @@ class VideoResultMetrics:
     VMAF: float
 
 @dataclass
-class ResultSetItem():
+class ResultSetItem:
     SequenceID: int
-    NetworkTopologyId: int | None #TODO remove this, this is a bug on the backend!
+    NetworkTopologyId: int
     DistruptionProfileId: int
     EncodingParameters: dict
     Results: VideoResultMetrics

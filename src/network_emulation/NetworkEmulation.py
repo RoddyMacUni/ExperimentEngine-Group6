@@ -4,6 +4,7 @@ from subprocess import CompletedProcess, CalledProcessError
 from os.path import exists
 from dataclasses import dataclass
 
+from AppSettings import AppSettings, GetAppSettings
 from model import Network
 from model.Experiment import SequenceItem, Experiment
 
@@ -19,6 +20,7 @@ class NetworkEmulator:
     network_type: int               # The network topology to test on - TODO: Only one network topology supported at this time
     source_file: str                # The file under test
     disrupted_file: str             # Path to the video that has been streamed through the network
+    app_settings: AppSettings
 
     command_timeout = 120            # The longest an experiment can run for before being terminated (measured in seconds)
 
@@ -27,15 +29,17 @@ class NetworkEmulator:
         self.experiment_item = experiment_item
         self.parent_experiment = parent_experiment
         self.network_type = self.experiment_item.NetworkTopologyId  # TODO: Get network topology details from the Infra API when supported
+        self.app_settings = GetAppSettings()
 
+        self.source_file = f"{self.app_settings.VideoRevieverTargetFolder}/{source_filename}"
 
         # Ensure the file still exists
-        if not exists(source_filename):
+        if not exists(f"{self.app_settings.VideoRevieverTargetFolder}/{source_filename}"):
             raise KnownProcessingException(f"source file f{source_filename} not found", str(self.parent_experiment.Id))
 
         # Set the source and destination paths
-        self.source_file = source_filename
-        self.disrupted_file = PurePath(PurePath(source_filename).parent, f"{parent_experiment.Id}-{experiment_item.SequenceId}-disrupted.mp4").__str__()
+        # self.disrupted_file = PurePath(PurePath(source_filename).parent, f"{parent_experiment.Id}_{experiment_item.SequenceId}_disrupted.mp4").__str__()
+        self.disrupted_file = f"{self.app_settings.VideoRevieverTargetFolder}/{self.parent_experiment.Id}_{self.experiment_item.SequenceId}_disrupted.mp4"
 
         # Generate the command required to run the experiment
         self.command = self.build_experiment_command()
